@@ -76,8 +76,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:textSize="20sp"
-                    android:hint="@string/edit_text.hint.password" />
+                    android:hint="@string/edit_text.hint.password"
+                    android:password="true"
+                    android:textSize="20sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -90,8 +91,9 @@
                     android:id="@+id/etPasswordConfirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:hint="@string/edit_text.hint.confirm_password" />
+                    android:hint="@string/edit_text.hint.confirm_password"
+                    android:password="true"
+                    android:textSize="20sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button

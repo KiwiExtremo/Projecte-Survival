@@ -5,6 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsAnimationController;
+import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +25,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void bStartGameActivity(View view) {
+        Window window = getWindow();
+
+        final WindowInsetsController insetsController = getWindow().getInsetsController();
+        if (insetsController != null) {
+            insetsController.hide(WindowInsets.Type.statusBars());
+        }
+
+        setContentView(new Game(this));
+    }
     public void bStartLoginActivity(View view) {
         
     }
