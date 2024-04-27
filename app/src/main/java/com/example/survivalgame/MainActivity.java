@@ -16,15 +16,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         fetchFromActivity();
-
-
     }
 
-    public void bStartLoginActivity(View view) {
-        
+    public void bOnClickStartLoginActivity(View view) {
+        startGameActivity();
     }
 
-    public void bStartRegisterActivity(View view) {
+    private void startGameActivity() {
+        Intent i = new Intent(this, GameActivity.class);
+
+        startActivity(i);
+    }
+
+    public void bOnClickStartRegisterActivity(View view) {
         Intent i = new Intent(this, RegisterActivity.class);
 
         startActivity(i);

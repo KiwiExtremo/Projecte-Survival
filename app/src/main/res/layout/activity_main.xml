@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="24dp"
-                android:onClick="bStartLoginActivity"
+                android:onClick="bOnClickStartLoginActivity"
                 android:text="@string/button.login" />
 
             <TextView
@@ -103,7 +103,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
-                android:onClick="bStartRegisterActivity"
+                android:onClick="bOnClickStartRegisterActivity"
                 android:text="@string/button.register" />
 
         </LinearLayout>
