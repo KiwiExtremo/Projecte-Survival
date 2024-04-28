@@ -2,12 +2,10 @@ package com.example.survivalgame;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -18,6 +16,7 @@ import androidx.core.content.ContextCompat;
  */
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Player player;
+    private final Joystick joystick;
     private GameLoop gameLoop;
     public Game(Context context) {
         super(context);
@@ -31,7 +30,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
 
         // Create a new player
-        player = new Player(getContext(), 500, 500, 100);
+        player = new Player(getContext(), 500, 500, 60);
+
+        // Create a joystick
+        // TODO make joystick appear where you click instead of in a fixed position
+        joystick = new Joystick(275, 700, 100, 60);
     }
 
     @Override
@@ -39,11 +42,21 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         //Handle different touch event actions
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                player.setPosition((double) event.getX(), (double) event.getY());
+                if (joystick.isPressed((double) event.getX(), (double) event.getY())) {
+                    joystick.setIsPressed(true);
+                }
                 return true;
 
             case MotionEvent.ACTION_MOVE:
-                player.setPosition((double) event.getX(), (double) event.getY());
+                if (joystick.getIsPressed()) {
+                    joystick.setActuator((double) event.getX(), (double) event.getY());
+                }
+                return true;
+
+            case MotionEvent.ACTION_UP:
+                joystick.setIsPressed(false);
+                joystick.resetActuator();
+
                 return true;
         }
 
@@ -72,6 +85,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         drawUPS(canvas);
         drawFPS(canvas);
 
+        joystick.draw(canvas);
         player.draw(canvas);
     }
 
@@ -100,6 +114,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
-        player.update();
+        // Update game state
+        joystick.update();
+        player.update(joystick);
     }
 }
