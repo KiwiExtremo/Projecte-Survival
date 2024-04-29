@@ -13,4 +13,7 @@
 
     <string name="button.login">Login</string>
     <string name="button.register">Register</string>
+
+    <string name="canvas.text.ups">UPS: %1$s</string>
+    <string name="canvas.text.fps">FPS: %1$s</string>
 </resources>

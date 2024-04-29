@@ -16,6 +16,11 @@
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
+            android:name=".GameActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
