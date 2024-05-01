@@ -1,8 +1,10 @@
-package com.example.survivalgame;
+package com.example.survivalgame.object;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import com.example.survivalgame.Utils;
 
 public class Joystick {
     private Paint innerCirclePaint, outerCirclePaint;
@@ -10,7 +12,7 @@ public class Joystick {
     private int innerCircleCenterPositionX, innerCircleCenterPositionY;
     private int outerCircleRadius, innerCircleRadius;
     private double joystickCenterToTouchDistance;
-    private boolean isPressed;
+    private boolean isPressed = false;
     private double actuatorX, actuatorY;
 
     public Joystick(int centerPositionX, int centerPositionY, int outerCircleRadius, int innerCircleRadius) {
@@ -37,6 +39,7 @@ public class Joystick {
     }
 
     public void draw(Canvas canvas) {
+        // Draw outer circle
         canvas.drawCircle(
                 outerCircleCenterPositionX,
                 outerCircleCenterPositionY,
@@ -44,6 +47,7 @@ public class Joystick {
                 outerCirclePaint
         );
 
+        // Draw inner circle (the handle)
         canvas.drawCircle(
                 innerCircleCenterPositionX,
                 innerCircleCenterPositionY,
@@ -74,12 +78,20 @@ public class Joystick {
         return joystickCenterToTouchDistance < outerCircleRadius;
     }
 
+    public boolean getIsPressed() {
+        return isPressed;
+    }
+
     public void setIsPressed(boolean isPressed) {
         this.isPressed = isPressed;
     }
 
-    public boolean getIsPressed() {
-        return isPressed;
+    public double getActuatorX() {
+        return actuatorX;
+    }
+
+    public double getActuatorY() {
+        return actuatorY;
     }
 
     public void setActuator(double touchPositionX, double touchPositionY) {
@@ -88,6 +100,7 @@ public class Joystick {
 
         double deltaDistance = Utils.getDistanceBetweenPoints(0, 0, deltaX, deltaY);
 
+        // Actuator X and Y will always be a value between 0 and 1
         if (deltaDistance < outerCircleRadius) {
             actuatorX = deltaX / outerCircleRadius;
             actuatorY = deltaY / outerCircleRadius;
@@ -100,13 +113,5 @@ public class Joystick {
     public void resetActuator() {
         actuatorX = 0;
         actuatorY = 0;
-    }
-
-    public double getActuatorX() {
-        return actuatorX;
-    }
-
-    public double getActuatorY() {
-        return actuatorY;
     }
 }

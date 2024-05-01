@@ -9,21 +9,22 @@ import com.example.survivalgame.R;
 import com.example.survivalgame.Utils;
 
 /**
- * A Player is the main character of the game, controllable by the user through a Joystick object.
- * The Player class is an extension of a Circle, which in turn inherits from the GameObject class.
+ * A Crosshair is an object that is used to know where the bullets will be fired.
+ * The Crosshair class is an extension of a Circle, which in turn inherits from the GameObject class.
  */
-public class Player extends Circle {
-    public static final double SPEED_PIXELS_PER_SECOND = 400.0;
-    public static final int MAX_HEALTH_POINTS = 10;
+public class Crosshair extends Circle {
+    public static final double SPEED_PIXELS_PER_SECOND = 1000.0;
     public static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
+    public static final int orbitRadius = 100;
     private final Joystick joystick;
 
-    public Player(Context context, Joystick joystick, double positionX, double positionY, double radius) {
-        super(context, ContextCompat.getColor(context, R.color.player), positionX, positionY, radius);
+    public Crosshair(Context context, Joystick joystick, double positionX, double positionY, double radius) {
+        super(context, ContextCompat.getColor(context, R.color.crosshair), positionX, positionY, radius);
 
         this.joystick = joystick;
     }
 
+    // TODO move crosshair to the same relative position as the actuator, but centered on the player's position
     @Override
     public void update() {
         // Update velocity based on the actuator of the joystick
@@ -34,7 +35,7 @@ public class Player extends Circle {
         positionX += velocityX;
         positionY += velocityY;
 
-        // Update direction of player
+        // Update direction of crosshair
         if (velocityX != 0 || velocityY != 0) {
             // Normalize velocity to get direction
             double distance = Utils.getDistanceBetweenPoints(0, 0, velocityX, velocityY);

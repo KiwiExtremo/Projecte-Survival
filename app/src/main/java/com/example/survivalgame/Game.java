@@ -12,7 +12,9 @@ import androidx.core.content.ContextCompat;
 
 import com.example.survivalgame.object.Bullet;
 import com.example.survivalgame.object.Circle;
+import com.example.survivalgame.object.Crosshair;
 import com.example.survivalgame.object.Enemy;
+import com.example.survivalgame.object.Joystick;
 import com.example.survivalgame.object.Player;
 
 import java.util.ArrayList;
@@ -24,13 +26,19 @@ import java.util.List;
  * for updating all states and rendering all objects to the screen.
  */
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
-    private final Joystick joystick;
+    private final Joystick playerJoystick;
+    private final Joystick crosshairJoystick;
     private final Player player;
+    // private final Crosshair crosshair;
     private List<Enemy> enemyList = new ArrayList<>();
     private List<Bullet> bulletList = new ArrayList<>();
     private GameLoop gameLoop;
-    private int joystickPointerId = 0;
+    private int playerJoystickPointerId = -1;
+    private int crosshairJoystickPointerId = -1;
     private int numberOfBulletsToFire = 0;
+    private boolean bulletReady = false;
+
+    private double crosshairJoystickActuatorX, crosshairJoystickActuatorY;
 
     public Game(Context context) {
         super(context);
@@ -41,57 +49,91 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Create a new game loop
         gameLoop = new GameLoop(this, surfaceHolder);
-        setFocusable(true);
 
-        // Create a joystick
-        // TODO make joystick appear where you click instead of in a fixed position
-        joystick = new Joystick(275, 700, 100, 60);
+        // Create the joysticks
+        // TODO make joysticks appear where you click instead of in a fixed position or set them at X distance from margins
+        playerJoystick = new Joystick(275, 700, 100, 60);
+        crosshairJoystick = new Joystick(1920 - 275, 700, 100, 60);
 
         // Create a new player
-        player = new Player(getContext(), joystick, 2 * 500, 500, 60);
+        player = new Player(getContext(), playerJoystick, 2 * 500, 500, 60);
+
+        // Create a new crosshair
+        // crosshair = new Crosshair(getContext(), crosshairJoystick, 2 * 500, 600, 5);
+
+        setFocusable(true);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //Handle different touch event actions
-        switch (event.getActionMasked()) {
+        int action = event.getAction();
+        int actionCode = action & MotionEvent.ACTION_MASK;
+        int pointerIdIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+        int pointerId = event.getPointerId(pointerIdIndex);
+
+        float eventX = event.getX(pointerIdIndex);
+        float eventY = event.getY(pointerIdIndex);
+
+        int pointerCount = event.getPointerCount();
+
+        switch (actionCode) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (joystick.getIsPressed()) { // Joystick was pressed right before this event -> fire a bullet
-                    numberOfBulletsToFire++;
-
-                } else if (joystick.isPressed(event.getX(), event.getY())) { // Joystick is pressed in this event -> isPressed() to true
-                    // Store the event ID of the pressing of the joystick
-                    joystickPointerId = event.getPointerId(event.getActionIndex());
-
-                    joystick.setIsPressed(true);
-
-                } else { // joystick was not pressed right before this event nor now -> fire a bullet
-                    numberOfBulletsToFire++;
-                }
-                return true;
-
             case MotionEvent.ACTION_MOVE:
-                // Joystick was pressed right before this event, and is now moved
-                if (joystick.getIsPressed()) {
-                    joystick.setActuator(event.getX(), event.getY());
+                if (playerJoystick.isPressed(eventX, eventY)) {
+                    // Joystick is pressed in this event -> isPressed() to true and store pointer ID
+                    playerJoystickPointerId = pointerId;
+                    playerJoystick.setIsPressed(true);
+
                 }
-                return true;
+                if (crosshairJoystick.isPressed(eventX, eventY)) {
+                    // Joystick is pressed in this event -> isPressed() to true and store the pointer ID
+                    crosshairJoystickPointerId = pointerId;
+                    crosshairJoystick.setIsPressed(true);
+                }
+                break;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                // Check if the lifted action was from an action that had an ACTION_DOWN event. If true, the current action is from lifting the joystick
-                if (joystickPointerId == event.getPointerId(event.getActionIndex())) {
-                    // Joystick has been lifted -> reset isPressed() and actuator
-                    joystick.setIsPressed(false);
-                    joystick.resetActuator();
-                }
-                // if false, the action comes from firing a bullet, so nothing needs to be done
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_OUTSIDE:
+                // Joystick was pressed right before this event, and is now moved
+                if (playerJoystickPointerId == pointerId) {
+                    // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
+                    playerJoystick.setIsPressed(false);
+                    playerJoystick.resetActuator();
 
-                return true;
+                    playerJoystickPointerId = -1;
+
+                } else if (crosshairJoystickPointerId == pointerId) {
+                    // Since this joystick is the crosshair, prepare a bullet
+                    numberOfBulletsToFire++;
+                    bulletReady = true;
+
+                    crosshairJoystickActuatorX = crosshairJoystick.getActuatorX();
+                    crosshairJoystickActuatorY = crosshairJoystick.getActuatorY();
+
+                    // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
+                    crosshairJoystick.setIsPressed(false);
+                    crosshairJoystick.resetActuator();
+
+                    crosshairJoystickPointerId = -1;
+                }
+                break;
         }
 
-        return super.onTouchEvent(event);
+        for (int iPointerIndex = 0; iPointerIndex < pointerCount; iPointerIndex++) {
+            if (playerJoystick.getIsPressed() && event.getPointerId(iPointerIndex) == playerJoystickPointerId) {
+                // Joystick was pressed previously and is now moved
+                playerJoystick.setActuator(event.getX(iPointerIndex), event.getY(iPointerIndex));
+
+            } else if (crosshairJoystick.getIsPressed() && event.getPointerId(iPointerIndex) == crosshairJoystickPointerId) {
+                // Joystick was pressed previously and is now moved
+                crosshairJoystick.setActuator(event.getX(iPointerIndex), event.getY(iPointerIndex));
+            }
+        }
+        return true;
     }
 
     @Override
@@ -116,8 +158,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         drawUPS(canvas);
         drawFPS(canvas);
 
-        joystick.draw(canvas);
+        playerJoystick.draw(canvas);
+        crosshairJoystick.draw(canvas);
+
         player.draw(canvas);
+        // crosshair.draw(canvas);
 
         for (Enemy enemy : enemyList) {
             enemy.draw(canvas);
@@ -154,21 +199,32 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         // Update state of each object in the game
-        joystick.update();
+        playerJoystick.update();
+        crosshairJoystick.update();
+
         player.update();
+        // crosshair.update();
 
         // Enemies are created dynamically here
         if (Enemy.readyToSpawn()) {
             enemyList.add(new Enemy(getContext(), player));
         }
 
-        while (numberOfBulletsToFire > 0) {
-            bulletList.add(new Bullet(getContext(), player));
-            numberOfBulletsToFire--;
-        }
         // Update state of each enemy
         for (Enemy enemy : enemyList) {
             enemy.update();
+        }
+
+        // Bullets are created dynamically here
+        /*
+        while (numberOfBulletsToFire > 0) {
+            bulletList.add(new Bullet(getContext(), player, crosshairJoystick));
+            numberOfBulletsToFire--;
+        } */
+
+        if (bulletReady) {
+            bulletList.add(new Bullet(getContext(), player, crosshairJoystickActuatorX, crosshairJoystickActuatorY));
+            bulletReady = false;
         }
 
         // Update state of each bullet
@@ -176,7 +232,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             bullet.update();
         }
 
-        // Remove the current enemy if it is colliding with the player or a bullet (implicit iterator)
+        // Remove the current enemy if it is colliding with the player or a bullet
+        // by iterating through all enemies and bullets
         enemyList.removeIf(enemy -> Circle.isColliding(enemy, player));
 
         Iterator<Enemy> enemyIterator = enemyList.iterator();
