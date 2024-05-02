@@ -28,6 +28,11 @@ public class Enemy extends Circle {
         this.player = player;
     }
 
+    /**
+     * Enemy is an overload constructor used for spawning enemies in random locations
+     * @param context context of the invoking activity
+     * @param player player object the enemy will chase
+     */
     public Enemy(Context context, Player player) {
         // TODO change 1000 to max screen size - 20% margins
         // TODO check that the spawn point is not too close to the player

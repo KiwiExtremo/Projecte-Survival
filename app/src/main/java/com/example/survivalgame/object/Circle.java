@@ -11,6 +11,7 @@ import android.graphics.Paint;
 public abstract class Circle extends GameObject {
     protected double radius;
     protected Paint paint;
+
     public Circle(Context context, int color, double positionX, double positionY, double radius) {
         super(positionX, positionY);
 
@@ -19,6 +20,10 @@ public abstract class Circle extends GameObject {
         // Set color of the circle
         paint = new Paint();
         paint.setColor(color);
+    }
+
+    private double getRadius() {
+        return radius;
     }
 
     /**
@@ -33,10 +38,6 @@ public abstract class Circle extends GameObject {
         double distanceToCollision = object1.getRadius() + object2.getRadius();
 
         return distance < distanceToCollision;
-    }
-
-    private double getRadius() {
-        return radius;
     }
 
     public void draw(Canvas canvas) {

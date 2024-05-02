@@ -6,4 +6,5 @@
     <color name="player">#FFDD00</color>
     <color name="enemy">#FF0000</color>
     <color name="bullet">#C39800</color>
+    <color name="crosshair">#C1C1C1</color>
 </resources>

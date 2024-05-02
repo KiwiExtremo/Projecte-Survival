@@ -9,7 +9,7 @@ import java.util.zip.Adler32;
 public class GameLoop extends Thread {
     public static final double MAX_UPS = 60.0;
     public static final double UPS_PERIOD = 1E+3 / MAX_UPS;
-    private boolean isRunning;
+    private boolean isRunning = false;
     private SurfaceHolder surfaceHolder;
     private Game game;
     private double averageUPS;
@@ -62,6 +62,7 @@ public class GameLoop extends Thread {
 
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
+
             } finally {
                 if (canvas != null) {
                     try {
@@ -81,8 +82,9 @@ public class GameLoop extends Thread {
             if (sleepTime > 0) {
                 try {
                     sleep(sleepTime);
+
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
             }
 
