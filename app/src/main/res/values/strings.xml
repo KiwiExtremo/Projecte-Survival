@@ -4,16 +4,24 @@
     <string name="text_view.title.sign_in">Sign in</string>
     <string name="text_view.title.register">Register</string>
     <string name="text_view.title.not_user">Not a user yet?</string>
-    <string name="text_view.username">Username:</string>
+    <string name="text_view.user_email">Email:</string>
     <string name="text_view.password">Password:</string>
 
-    <string name="edit_text.hint.username">Your username</string>
+    <string name="edit_text.hint.user_email">Your email</string>
     <string name="edit_text.hint.password">Your password</string>
     <string name="edit_text.hint.confirm_password">Confirm your password</string>
+    <string name="edit_text.error.user_email">Please write a valid email</string>
+    <string name="edit_text.error.password">Please write a valid password</string>
+    <string name="edit_text.error.confirm_password">The passwords don\'t match</string>
 
     <string name="button.login">Login</string>
     <string name="button.register">Register</string>
+    <string name="button.forgot_password">Forgot your password?</string>
 
-    <string name="canvas.text.ups">UPS: %1$s</string>
-    <string name="canvas.text.fps">FPS: %1$s</string>
+    <string name="canvas.text.ups">UPS: %1$.5s</string>
+    <string name="canvas.text.fps">FPS: %1$.5s</string>
+
+    <string name="toast.login.successful">Login successful</string>
+
+    <string name="google.sign_in.default_web_client">979601923902-mq8e7ph86es0tkafb2nqaksc3e7s4sif.apps.googleusercontent.com</string>
 </resources>

@@ -13,15 +13,7 @@
         android:theme="@style/Theme.SurvivalGame"
         tools:targetApi="31">
         <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GameActivity"
-            android:exported="false"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".authenticator.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +21,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".authenticator.RegisterActivity"
+            android:exported="false" />
+        <activity android:name=".LoginActivity"
+            android:exported="false" />
+        <activity android:name=".authenticator.ResetPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".GameActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
     </application>
 
 </manifest>

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import androidx.core.content.ContextCompat;
 
-import com.example.survivalgame.GameLoop;
+import com.example.survivalgame.gameengine.GameLoop;
 import com.example.survivalgame.R;
 
 /**

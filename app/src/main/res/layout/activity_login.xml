@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".authenticator.RegisterActivity">
+    tools:context=".LoginActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/text_view.title.register"
+                android:text="@string/text_view.title.sign_in"
                 android:textSize="34sp"
                 android:textStyle="bold" />
 
@@ -69,39 +69,65 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="12dp"
-                app:boxBackgroundColor="@android:color/transparent">
+                app:boxBackgroundColor="@android:color/transparent"
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
                     android:hint="@string/edit_text.hint.password"
-                    android:password="true"
+                    android:inputType="text|textPassword"
                     android:textSize="20sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="12dp"
-                app:boxBackgroundColor="@android:color/transparent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPasswordConfirm"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/edit_text.hint.confirm_password"
-                    android:password="true"
-                    android:textSize="20sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
+            <ProgressBar
+                android:id="@+id/progressBarLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="-12dp"
+                android:visibility="gone" />
             <Button
                 android:id="@+id/bLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="24dp"
+                android:onClick="bOnClickStartLoginActivity"
+                android:text="@string/button.login" />
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/bGoogleLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp" />
+
+            <TextView
+                android:id="@+id/tvForgotPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:text="@string/button.forgot_password"
+                android:textAlignment="textEnd"
+                android:onClick="bOnClickResetPasswordActivity" />
+
+            <TextView
+                android:id="@+id/tvRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/text_view.title.not_user"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/bRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:onClick="bOnClickStartRegisterActivity"
                 android:text="@string/button.register" />
 
         </LinearLayout>

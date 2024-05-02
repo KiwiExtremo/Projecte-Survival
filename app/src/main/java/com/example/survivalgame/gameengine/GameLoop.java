@@ -1,10 +1,7 @@
-package com.example.survivalgame;
+package com.example.survivalgame.gameengine;
 
 import android.graphics.Canvas;
-import android.view.Surface;
 import android.view.SurfaceHolder;
-
-import java.util.zip.Adler32;
 
 public class GameLoop extends Thread {
     public static final double MAX_UPS = 60.0;

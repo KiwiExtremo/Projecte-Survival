@@ -1,14 +1,10 @@
 package com.example.survivalgame;
 
-import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
-
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
-import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.survivalgame.gameengine.Game;
 
 public class GameActivity extends AppCompatActivity {
     @Override
@@ -16,6 +12,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(new Game(this));
 
+        // TODO fix this
         // Set window to full screen, hiding the status' bars.
 //        Window window = getWindow();
 //

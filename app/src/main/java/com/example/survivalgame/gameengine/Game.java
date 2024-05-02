@@ -1,4 +1,4 @@
-package com.example.survivalgame;
+package com.example.survivalgame.gameengine;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,6 +10,8 @@ import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.example.survivalgame.object.Joystick;
+import com.example.survivalgame.R;
 import com.example.survivalgame.object.Bullet;
 import com.example.survivalgame.object.Circle;
 import com.example.survivalgame.object.Crosshair;
@@ -261,10 +263,5 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
-import android.view.View;
-
-public class Game extends View {
-    public Game(Context context) {
-        super(context);
     }
 }
