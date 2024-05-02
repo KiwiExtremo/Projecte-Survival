@@ -8,7 +8,7 @@ import android.graphics.Canvas;
 public abstract class GameObject {
     protected double positionX, positionY;
     protected double velocityX = 0, velocityY = 0;
-    protected double directionX = 1, directionY = 0;
+    protected double directionX = 0, directionY = 0;
 
     public GameObject() {
 

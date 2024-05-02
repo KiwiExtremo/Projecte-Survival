@@ -138,6 +138,8 @@ public class LoginActivity extends AppCompatActivity {
     }
     public void bOnClickSignInWithGoogle(View view) {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+
+        // TODO fix startActivityForResult
         /*
         signInGoogleLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
@@ -149,8 +151,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        signInGoogleLauncher.launch(signInIntent);
-        */
+        signInGoogleLauncher.launch(signInIntent);  */
+
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
