@@ -1,6 +1,7 @@
 package com.example.survivalgame.object;
 
 import android.content.Context;
+import android.graphics.Canvas;
 
 import androidx.core.content.ContextCompat;
 
@@ -17,11 +18,16 @@ public class Player extends Circle {
     public static final int MAX_HEALTH_POINTS = 10;
     public static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
     private final Joystick joystick;
+    private HealthBar healthBar;
+    private Crosshair crosshair;
+    private int currentHealthPoints;
 
     public Player(Context context, Joystick joystick, double positionX, double positionY, double radius) {
         super(context, ContextCompat.getColor(context, R.color.player), positionX, positionY, radius);
 
         this.joystick = joystick;
+        this.healthBar = new HealthBar(this);
+        this.currentHealthPoints = MAX_HEALTH_POINTS;
     }
 
     @Override
@@ -42,5 +48,17 @@ public class Player extends Circle {
             directionX = velocityX / distance;
             directionY = velocityY / distance;
         }
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+
+        healthBar.draw(canvas);
+
+    }
+
+    public int getCurrentHealthPoints() {
+        return currentHealthPoints;
     }
 }

@@ -31,13 +31,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Joystick playerJoystick;
     private final Joystick crosshairJoystick;
     private final Player player;
-    // private final Crosshair crosshair;
+    private final Crosshair crosshair;
     private List<Enemy> enemyList = new ArrayList<>();
     private List<Bullet> bulletList = new ArrayList<>();
     private GameLoop gameLoop;
     private int playerJoystickPointerId = -1;
     private int crosshairJoystickPointerId = -1;
-    private int numberOfBulletsToFire = 0;
     private boolean bulletReady = false;
 
     private double crosshairJoystickActuatorX, crosshairJoystickActuatorY;
@@ -61,7 +60,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         player = new Player(getContext(), playerJoystick, 2 * 500, 500, 60);
 
         // Create a new crosshair
-        // crosshair = new Crosshair(getContext(), crosshairJoystick, 2 * 500, 600, 5);
+        crosshair = new Crosshair(getContext(), player, crosshairJoystick, 2 * 500, 600);
 
         setFocusable(true);
     }
@@ -88,12 +87,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     playerJoystickPointerId = pointerId;
                     playerJoystick.setIsPressed(true);
 
-                }
+                } // TODO move playerJoystick to eventX and eventY if left side of screen is pressed
+
                 if (crosshairJoystick.isPressed(eventX, eventY)) {
                     // Joystick is pressed in this event -> isPressed() to true and store the pointer ID
                     crosshairJoystickPointerId = pointerId;
                     crosshairJoystick.setIsPressed(true);
-                }
+                } // TODO move crossJoystick to eventX and eventY if right side of screen is pressed
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -110,7 +110,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
                 } else if (crosshairJoystickPointerId == pointerId) {
                     // Since this joystick is the crosshair, prepare a bullet
-                    numberOfBulletsToFire++;
                     bulletReady = true;
 
                     crosshairJoystickActuatorX = crosshairJoystick.getActuatorX();
@@ -160,11 +159,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         drawUPS(canvas);
         drawFPS(canvas);
 
+        crosshair.draw(canvas);
+        player.draw(canvas);
+
         playerJoystick.draw(canvas);
         crosshairJoystick.draw(canvas);
 
-        player.draw(canvas);
-        // crosshair.draw(canvas);
 
         for (Enemy enemy : enemyList) {
             enemy.draw(canvas);
@@ -205,7 +205,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         crosshairJoystick.update();
 
         player.update();
-        // crosshair.update();
+        crosshair.update();
 
         // Enemies are created dynamically here
         if (Enemy.readyToSpawn()) {
@@ -217,13 +217,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             enemy.update();
         }
 
-        // Bullets are created dynamically here
-        /*
-        while (numberOfBulletsToFire > 0) {
-            bulletList.add(new Bullet(getContext(), player, crosshairJoystick));
-            numberOfBulletsToFire--;
-        } */
-
+        // Create bullet if ready
         if (bulletReady) {
             bulletList.add(new Bullet(getContext(), player, crosshairJoystickActuatorX, crosshairJoystickActuatorY));
             bulletReady = false;
