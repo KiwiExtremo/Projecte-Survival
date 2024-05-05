@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.survivalgame.LoginActivity;
 import com.example.survivalgame.R;
 
 public class RegisterActivity extends AppCompatActivity {

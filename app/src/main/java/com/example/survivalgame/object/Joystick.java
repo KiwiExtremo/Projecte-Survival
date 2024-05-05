@@ -114,4 +114,14 @@ public class Joystick {
         actuatorX = 0;
         actuatorY = 0;
     }
+
+    public void setPositionX(float eventX) {
+        outerCircleCenterPositionX = (int) eventX;
+        innerCircleCenterPositionX = (int) eventX;
+    }
+
+    public void setPositionY(float eventY) {
+        outerCircleCenterPositionY = (int) eventY;
+        innerCircleCenterPositionY = (int) eventY;
+    }
 }

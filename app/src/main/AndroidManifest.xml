@@ -24,7 +24,7 @@
         <activity
             android:name=".authenticator.RegisterActivity"
             android:exported="false" />
-        <activity android:name=".LoginActivity"
+        <activity android:name=".authenticator.LoginActivity"
             android:exported="false" />
         <activity android:name=".authenticator.ResetPasswordActivity"
             android:exported="false" />

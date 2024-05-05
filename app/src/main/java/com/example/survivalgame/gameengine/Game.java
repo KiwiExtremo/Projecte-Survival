@@ -1,6 +1,7 @@
 package com.example.survivalgame.gameengine;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.MotionEvent;
@@ -10,7 +11,6 @@ import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
-import com.example.survivalgame.object.Joystick;
 import com.example.survivalgame.R;
 import com.example.survivalgame.object.Bullet;
 import com.example.survivalgame.object.Circle;
@@ -29,20 +29,28 @@ import java.util.List;
  */
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Joystick playerJoystick;
-    private final Joystick crosshairJoystick;
+    private final Joystick aimJoystick;
     private final Player player;
     private final Crosshair crosshair;
     private List<Enemy> enemyList = new ArrayList<>();
     private List<Bullet> bulletList = new ArrayList<>();
     private GameLoop gameLoop;
     private int playerJoystickPointerId = -1;
-    private int crosshairJoystickPointerId = -1;
-    private boolean bulletReady = false;
+    private int aimJoystickPointerId = -1;
 
-    private double crosshairJoystickActuatorX, crosshairJoystickActuatorY;
+    int screenHeight, screenWidth;
+    private boolean bulletReady = false;
+    private boolean showPlayerJoystick = false;
+    private boolean showAimJoystick = false;
+    private double bulletAimDirectionX, bulletAimDirectionY;
+
 
     public Game(Context context) {
         super(context);
+
+        // Get screen sizes on runtime
+        screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
 
         // Get surface holder and add callback
         SurfaceHolder surfaceHolder = getHolder();
@@ -51,16 +59,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Create a new game loop
         gameLoop = new GameLoop(this, surfaceHolder);
 
-        // Create the joysticks
-        // TODO make joysticks appear where you click instead of in a fixed position or set them at X distance from margins
-        playerJoystick = new Joystick(275, 700, 100, 60);
-        crosshairJoystick = new Joystick(1920 - 275, 700, 100, 60);
+        // Create the joysticks (they're set on approximate positions by default, but will move dynamically when used)
+        playerJoystick = new Joystick((int) screenWidth / 4, (int) screenHeight / 2, 100, 60);
+        aimJoystick = new Joystick((int) 3 * screenWidth / 4, (int) screenHeight / 2, 100, 60);
 
         // Create a new player
         player = new Player(getContext(), playerJoystick, 2 * 500, 500, 60);
 
         // Create a new crosshair
-        crosshair = new Crosshair(getContext(), player, crosshairJoystick, 2 * 500, 600);
+        crosshair = new Crosshair(getContext(), player, aimJoystick, 2 * 500, 600);
 
         setFocusable(true);
     }
@@ -82,25 +89,35 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_MOVE:
-                if (playerJoystick.isPressed(eventX, eventY)) {
-                    // Joystick is pressed in this event -> isPressed() to true and store pointer ID
+                if (((float) screenWidth / 2 - screenWidth * 0.1) > eventX && !showPlayerJoystick) {
+                    // left side of the screen was pressed -> playerJoystick position will be moved to event position
+                    playerJoystick.setPositionX(eventX);
+                    playerJoystick.setPositionY(eventY);
+
                     playerJoystickPointerId = pointerId;
                     playerJoystick.setIsPressed(true);
 
-                } // TODO move playerJoystick to eventX and eventY if left side of screen is pressed
+                    showPlayerJoystick = true;
 
-                if (crosshairJoystick.isPressed(eventX, eventY)) {
-                    // Joystick is pressed in this event -> isPressed() to true and store the pointer ID
-                    crosshairJoystickPointerId = pointerId;
-                    crosshairJoystick.setIsPressed(true);
-                } // TODO move crossJoystick to eventX and eventY if right side of screen is pressed
+                }
+
+                if (((float) screenWidth / 2 + screenWidth * 0.1) < eventX && !showAimJoystick) {
+                    // right side of the screen was pressed -> aimJoystick position will be moved to event position
+                    aimJoystick.setPositionX(eventX);
+                    aimJoystick.setPositionY(eventY);
+
+                    aimJoystickPointerId = pointerId;
+                    aimJoystick.setIsPressed(true);
+
+                    showAimJoystick = true;
+                }
                 break;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_OUTSIDE:
-                // Joystick was pressed right before this event, and is now moved
+                // A joystick was pressed right before this event, and is now moved
                 if (playerJoystickPointerId == pointerId) {
                     // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
                     playerJoystick.setIsPressed(false);
@@ -108,18 +125,22 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
                     playerJoystickPointerId = -1;
 
-                } else if (crosshairJoystickPointerId == pointerId) {
+                    showPlayerJoystick = false;
+
+                } else if (aimJoystickPointerId == pointerId) {
                     // Since this joystick is the crosshair, prepare a bullet
                     bulletReady = true;
 
-                    crosshairJoystickActuatorX = crosshairJoystick.getActuatorX();
-                    crosshairJoystickActuatorY = crosshairJoystick.getActuatorY();
+                    bulletAimDirectionX = aimJoystick.getActuatorX();
+                    bulletAimDirectionY = aimJoystick.getActuatorY();
 
                     // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
-                    crosshairJoystick.setIsPressed(false);
-                    crosshairJoystick.resetActuator();
+                    aimJoystick.setIsPressed(false);
+                    aimJoystick.resetActuator();
 
-                    crosshairJoystickPointerId = -1;
+                    aimJoystickPointerId = -1;
+
+                    showAimJoystick = false;
                 }
                 break;
         }
@@ -129,9 +150,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 // Joystick was pressed previously and is now moved
                 playerJoystick.setActuator(event.getX(iPointerIndex), event.getY(iPointerIndex));
 
-            } else if (crosshairJoystick.getIsPressed() && event.getPointerId(iPointerIndex) == crosshairJoystickPointerId) {
+            } else if (aimJoystick.getIsPressed() && event.getPointerId(iPointerIndex) == aimJoystickPointerId) {
                 // Joystick was pressed previously and is now moved
-                crosshairJoystick.setActuator(event.getX(iPointerIndex), event.getY(iPointerIndex));
+                aimJoystick.setActuator(event.getX(iPointerIndex), event.getY(iPointerIndex));
             }
         }
         return true;
@@ -162,9 +183,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         crosshair.draw(canvas);
         player.draw(canvas);
 
-        playerJoystick.draw(canvas);
-        crosshairJoystick.draw(canvas);
-
+        if (showPlayerJoystick) {
+            playerJoystick.draw(canvas);
+        }
+        if (showAimJoystick) {
+            aimJoystick.draw(canvas);
+        }
 
         for (Enemy enemy : enemyList) {
             enemy.draw(canvas);
@@ -202,7 +226,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         // Update state of each object in the game
         playerJoystick.update();
-        crosshairJoystick.update();
+        aimJoystick.update();
 
         player.update();
         crosshair.update();
@@ -219,7 +243,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Create bullet if ready
         if (bulletReady) {
-            bulletList.add(new Bullet(getContext(), player, crosshairJoystickActuatorX, crosshairJoystickActuatorY));
+            bulletList.add(new Bullet(getContext(), player, bulletAimDirectionX, bulletAimDirectionY));
             bulletReady = false;
         }
 

@@ -2,6 +2,7 @@ package com.example.survivalgame.object;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 
 import androidx.core.content.ContextCompat;
@@ -20,6 +21,7 @@ public class Crosshair extends Circle {
     private final Player player;
     private final Joystick joystick;
     private Context context;
+    Paint orbitPaint;
 
     public Crosshair(Context context, Player player, Joystick joystick, double positionX, double positionY) {
         super(context, ContextCompat.getColor(context, R.color.crosshair), positionX, positionY, CROSSHAIR_RADIUS);
@@ -27,6 +29,12 @@ public class Crosshair extends Circle {
         this.context = context;
         this.player = player;
         this.joystick = joystick;
+
+        orbitPaint = new Paint();
+        orbitPaint.setColor(ContextCompat.getColor(context, R.color.crosshair));
+        orbitPaint.setStrokeWidth(2);
+        orbitPaint.setStyle(Paint.Style.STROKE);
+        orbitPaint.setPathEffect(new DashPathEffect(new float[]{(float) (10 * Math.PI), (float) (10 * Math.PI)}, (float)1.0));
     }
 
     @Override
@@ -42,7 +50,6 @@ public class Crosshair extends Circle {
 
             crosshairPositionX = crosshairPositionX / distance;
             crosshairPositionY = crosshairPositionY / distance;
-
         }
 
         positionX = player.getPositionX() + crosshairPositionX * ORBIT_RADIUS;
@@ -53,11 +60,6 @@ public class Crosshair extends Circle {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        Paint paint = new Paint();
-        paint.setColor(ContextCompat.getColor(context, R.color.crosshair));
-        paint.setStrokeWidth(2);
-        paint.setStyle(Paint.Style.STROKE);
-
-        canvas.drawCircle((float) player.getPositionX(), (float) player.getPositionY(), ORBIT_RADIUS, paint);
+        canvas.drawCircle((float) player.getPositionX(), (float) player.getPositionY(), ORBIT_RADIUS, orbitPaint);
     }
 }

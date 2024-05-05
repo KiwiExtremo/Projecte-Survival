@@ -1,23 +1,20 @@
-package com.example.survivalgame;
+package com.example.survivalgame.authenticator;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
+import static android.content.ContentValues.TAG;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.survivalgame.authenticator.MainActivity;
-import com.example.survivalgame.authenticator.RegisterActivity;
-import com.example.survivalgame.authenticator.ResetPasswordActivity;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.survivalgame.GameActivity;
+import com.example.survivalgame.R;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -80,15 +77,15 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Toast.makeText(getApplicationContext(), "firebaseAuthWithGoogle:" + account.getId(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Signed in with Google: " + account.getId(), Toast.LENGTH_SHORT).show();
                 //Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                 firebaseAuthWithGoogle(account.getIdToken());
 
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Toast.makeText(getApplicationContext(), "Google sign in failed"+ e,Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Google sign in failed: "+ e,Toast.LENGTH_LONG).show();
 
-                //Log.w(TAG, "Google sign in failed", e);
+                Log.w(TAG, "Google sign in failed: ", e);
             }
         }
     }
@@ -121,8 +118,13 @@ public class LoginActivity extends AppCompatActivity {
                 startGameActivity();
 
             } else {
-                // TODO check if auth fail is due to not being registered, password not patching user's, or other
+                // TODO check if auth fail is due to user not being in the database, password not patching user's, or other
                 Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+
+                // (TEMPORARY FIX)
+                Intent i = new Intent(this, GameActivity.class);
+
+                startActivity(i);
             }
         });
     }
