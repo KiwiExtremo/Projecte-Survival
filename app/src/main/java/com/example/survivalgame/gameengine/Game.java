@@ -3,21 +3,20 @@ package com.example.survivalgame.gameengine;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
-import com.example.survivalgame.R;
-import com.example.survivalgame.object.Bullet;
-import com.example.survivalgame.object.Circle;
-import com.example.survivalgame.object.Crosshair;
-import com.example.survivalgame.object.Enemy;
-import com.example.survivalgame.object.Joystick;
-import com.example.survivalgame.object.Player;
+import com.example.survivalgame.gameobject.Bullet;
+import com.example.survivalgame.gameobject.Circle;
+import com.example.survivalgame.gameobject.Crosshair;
+import com.example.survivalgame.gameobject.Enemy;
+import com.example.survivalgame.gameobject.Player;
+import com.example.survivalgame.gamepanel.GameOver;
+import com.example.survivalgame.gamepanel.Joystick;
+import com.example.survivalgame.gamepanel.Performance;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,6 +42,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private boolean showPlayerJoystick = false;
     private boolean showAimJoystick = false;
     private double bulletAimDirectionX, bulletAimDirectionY;
+    private GameOver gameOver;
+    private Performance performance;
 
 
     public Game(Context context) {
@@ -59,15 +60,20 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Create a new game loop
         gameLoop = new GameLoop(this, surfaceHolder);
 
+    // Initialize the game panels
+        gameOver = new GameOver(context, screenWidth, screenHeight);
+        performance = new Performance(context, gameLoop);
+
         // Create the joysticks (they're set on approximate positions by default, but will move dynamically when used)
         playerJoystick = new Joystick((int) screenWidth / 4, (int) screenHeight / 2, 100, 60);
         aimJoystick = new Joystick((int) 3 * screenWidth / 4, (int) screenHeight / 2, 100, 60);
 
+    // Initialize the game objects
         // Create a new player
-        player = new Player(getContext(), playerJoystick, 2 * 500, 500, 60);
+        player = new Player(context, playerJoystick, 2 * 500, 500, 60);
 
         // Create a new crosshair
-        crosshair = new Crosshair(getContext(), player, aimJoystick, 2 * 500, 600);
+        crosshair = new Crosshair(context, player, aimJoystick, 2 * 500, 600);
 
         setFocusable(true);
     }
@@ -177,8 +183,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        drawUPS(canvas);
-        drawFPS(canvas);
+        performance.draw(canvas);
 
         crosshair.draw(canvas);
         player.draw(canvas);
@@ -197,33 +202,21 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         for (Bullet bullet : bulletList) {
             bullet.draw(canvas);
         }
+
+        // When a player loses all their healthpoints, draw the Game Over
+        if (player.getCurrentHealthPoints() <= 0) {
+            gameOver.draw(canvas);
+        }
     }
 
-    public void drawUPS(Canvas canvas) {
-        double avgUPS = gameLoop.getAverageUPS();
 
-        int color = ContextCompat.getColor(getContext(), R.color.green);
-
-        Paint paint = new Paint();
-        paint.setColor(color);
-        paint.setTextSize(50);
-
-        canvas.drawText(getContext().getString(R.string.canvas_text_ups, avgUPS), 100, 100, paint);
-    }
-
-    public void drawFPS(Canvas canvas) {
-        double avgFPS = gameLoop.getAverageFPS();
-
-        int color = ContextCompat.getColor(getContext(), R.color.green);
-
-        Paint paint = new Paint();
-        paint.setColor(color);
-        paint.setTextSize(50);
-
-        canvas.drawText(getContext().getString(R.string.canvas_text_fps, avgFPS), 100, 200, paint);
-    }
 
     public void update() {
+        // Stop updating the game if the player is dead
+        if (player.getCurrentHealthPoints() <= 0) {
+            return;
+        }
+
         // Update state of each object in the game
         playerJoystick.update();
         aimJoystick.update();
@@ -262,6 +255,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
             if (Circle.isColliding(enemy, player)) {
                 enemyIterator.remove();
+
+                // Reduce the player's health points
+                player.setHealthPoints(player.getCurrentHealthPoints() - 1);
 
                 // Skip bullets collision detection with current enemy since it collided with the player
                 continue;

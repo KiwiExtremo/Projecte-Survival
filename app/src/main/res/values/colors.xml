@@ -7,4 +7,7 @@
     <color name="enemy">#FF0000</color>
     <color name="bullet">#C39800</color>
     <color name="crosshair">#C1C1C1</color>
+    <color name="healthbar_border">#8C8C8C</color>
+    <color name="healthbar_color">#4CC618</color>
+    <color name="game_over">#74DEFF</color>
 </resources>

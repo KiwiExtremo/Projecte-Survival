@@ -1,4 +1,4 @@
-package com.example.survivalgame.object;
+package com.example.survivalgame.gameobject;
 
 import android.content.Context;
 

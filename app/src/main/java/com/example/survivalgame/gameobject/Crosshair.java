@@ -1,4 +1,4 @@
-package com.example.survivalgame.object;
+package com.example.survivalgame.gameobject;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.survivalgame.R;
 import com.example.survivalgame.Utils;
+import com.example.survivalgame.gamepanel.Joystick;
 
 /**
  * A Crosshair is an object that is used to know where the bullets will be fired.
