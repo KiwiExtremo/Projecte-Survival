@@ -35,7 +35,6 @@ public class Joystick {
         innerCirclePaint = new Paint();
         innerCirclePaint.setColor(Color.DKGRAY);
         innerCirclePaint.setStyle(Paint.Style.FILL_AND_STROKE);
-
     }
 
     public void draw(Canvas canvas) {
@@ -54,8 +53,6 @@ public class Joystick {
                 innerCircleRadius,
                 innerCirclePaint
         );
-
-
     }
 
     public void update() {

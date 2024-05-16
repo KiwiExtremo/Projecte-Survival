@@ -15,9 +15,10 @@ import com.example.survivalgame.Utils;
  * The Crosshair class is an extension of a Circle, which in turn inherits from the GameObject class.
  */
 public class Crosshair extends Circle {
-    public static final int ORBIT_RADIUS = 250;
+    public static final int ORBIT_RADIUS = 300;
     public static final int CROSSHAIR_RADIUS = 15;
-    private double crosshairPositionX, crosshairPositionY;
+    private double previousCrosshairPositionX = 0;
+    private double previousCrosshairPositionY = 0;
     private final Player player;
     private final Joystick joystick;
     private Context context;
@@ -39,21 +40,35 @@ public class Crosshair extends Circle {
 
     @Override
     public void update() {
+        double threshold = 0.25;
+
+        double crosshairPositionX;
+        double crosshairPositionY;
+
         // Update direction based on current joystick position
-        crosshairPositionX = joystick.getActuatorX();
-        crosshairPositionY = joystick.getActuatorY();
+        directionX = joystick.getActuatorX();
+        directionY = joystick.getActuatorY();
 
 
         // Normalize direction
-        if (crosshairPositionX != 0 || crosshairPositionY != 0) {
-            double distance = Utils.getDistanceBetweenPoints(0, 0, crosshairPositionX, crosshairPositionY);
+        if (Utils.getThreshold(directionX, threshold) != 0 || Utils.getThreshold(directionY, threshold) != 0) {
+            double distance = Utils.getDistanceBetweenPoints(0, 0, directionX, directionY);
 
-            crosshairPositionX = crosshairPositionX / distance;
-            crosshairPositionY = crosshairPositionY / distance;
+            crosshairPositionX = directionX / distance;
+            crosshairPositionY = directionY / distance;
+
+        } else {
+            crosshairPositionX = previousCrosshairPositionX;
+            crosshairPositionY = previousCrosshairPositionY;
         }
 
+        // Update position based on direction and orbit radius
         positionX = player.getPositionX() + crosshairPositionX * ORBIT_RADIUS;
         positionY = player.getPositionY() + crosshairPositionY * ORBIT_RADIUS;
+
+        // Save current position
+        previousCrosshairPositionX = crosshairPositionX;
+        previousCrosshairPositionY = crosshairPositionY;
     }
 
     @Override

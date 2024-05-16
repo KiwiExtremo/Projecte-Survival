@@ -15,4 +15,8 @@ public class Utils {
                 Math.pow(point1Y - point2Y, 2)
         );
     }
+
+    public static int getThreshold(double value, double threshold) {
+        return (int) Math.abs(value / threshold);
+    }
 }

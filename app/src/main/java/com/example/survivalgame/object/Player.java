@@ -19,7 +19,6 @@ public class Player extends Circle {
     public static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
     private final Joystick joystick;
     private HealthBar healthBar;
-    private Crosshair crosshair;
     private int currentHealthPoints;
 
     public Player(Context context, Joystick joystick, double positionX, double positionY, double radius) {

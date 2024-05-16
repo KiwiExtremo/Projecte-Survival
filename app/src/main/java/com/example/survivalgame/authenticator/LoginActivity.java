@@ -2,6 +2,7 @@ package com.example.survivalgame.authenticator;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +11,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.survivalgame.GameActivity;
@@ -37,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private BeginSignInRequest signInRequest;
     private GoogleSignInClient mGoogleSignInClient;
     private SignInButton signInButton;
-    private ActivityResultLauncher<Intent> signInGoogleLauncher;
+    private ActivityResultLauncher<Intent> resultLauncher;
 
     @Override
     public void onStart() {
@@ -60,34 +64,11 @@ public class LoginActivity extends AppCompatActivity {
 
         fetchFromActivity();
         initializeGoogleSignInOptions();
+        createActivityForResultLauncher();
 
         signInButton.setOnClickListener(view -> {
             bOnClickSignInWithGoogle(view);
         });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // TODO modify toasts
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Toast.makeText(getApplicationContext(), "Signed in with Google: " + account.getId(), Toast.LENGTH_SHORT).show();
-                //Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken());
-
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Toast.makeText(getApplicationContext(), "Google sign in failed: "+ e,Toast.LENGTH_LONG).show();
-
-                Log.w(TAG, "Google sign in failed: ", e);
-            }
-        }
     }
 
     public void bOnClickStartLoginActivity(View view) {
@@ -138,24 +119,35 @@ public class LoginActivity extends AppCompatActivity {
         Intent i = new Intent(this, ResetPasswordActivity.class);
         startActivity(i);
     }
-    public void bOnClickSignInWithGoogle(View view) {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
 
-        // TODO fix startActivityForResult
-        /*
-        signInGoogleLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == Activity.RESULT_OK) {
-                // Sign in was successful
-                Toast.makeText(this, "Sign in successful", Toast.LENGTH_SHORT).show();
-            } else {
-                // Sign in failed
-                Toast.makeText(this, "Sign in failed", Toast.LENGTH_SHORT).show();
+    private void createActivityForResultLauncher() {
+        resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+
+                if(result.getResultCode() == Activity.RESULT_OK) {
+
+                    Intent intent = result.getData();
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
+                    try {
+                        // Google Sign In was successful, authenticate with Firebase
+                        GoogleSignInAccount account = task.getResult(ApiException.class);
+                        Toast.makeText(getApplicationContext(), "firebaseAuthWithGoogle:" + account.getId(), Toast.LENGTH_SHORT).show();
+                        //Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                        firebaseAuthWithGoogle(account.getIdToken());
+                    } catch (ApiException e) {
+                        // Google Sign In failed, update UI appropriately
+                        Toast.makeText(getApplicationContext(), "Google sign in failed"+ e.toString() ,Toast.LENGTH_LONG).show();
+
+                        //Log.w(TAG, "Google sign in failed", e);
+                    }
+                }
             }
         });
+    }
 
-        signInGoogleLauncher.launch(signInIntent);  */
-
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+    public void bOnClickSignInWithGoogle(View view) {
+        resultLauncher.launch(new Intent(mGoogleSignInClient.getSignInIntent()));
     }
 
     private void startGameActivity() {
@@ -183,7 +175,6 @@ public class LoginActivity extends AppCompatActivity {
                 // If sign in fails, display a message to the user.
                 Toast.makeText(getApplicationContext(), "signInWithCredential:failure", Toast.LENGTH_SHORT).show();
                 //Log.w(TAG, "signInWithCredential:failure", task.getException());
-
             }
         });
     }
@@ -197,16 +188,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initializeGoogleSignInOptions() {
-        /*
-        signInRequest = BeginSignInRequest.builder()
-                .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                        .setSupported(true)
-                        // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.google_sign_in_default_web_client))
-                        // Only show accounts previously used to sign in.
-                        .setFilterByAuthorizedAccounts(true)
-                        .build())
-                .build(); */
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.google_sign_in_default_web_client))
                 .requestEmail()
