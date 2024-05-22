@@ -1,4 +1,4 @@
-package com.example.survivalgame.object;
+package com.example.survivalgame.gameobject;
 
 import android.content.Context;
 
@@ -22,12 +22,12 @@ public class Bullet extends Circle {
                 BULLET_RADIUS
         );
 
-        double directionDistance = Utils.getDistanceBetweenPoints(0, 0, crosshair.getPositionX(), crosshair.getPositionY());
+        double directionDistance = Utils.getDistanceBetweenPoints(0, 0, crosshair.getPreviousCrosshairPositionX(), crosshair.getPreviousCrosshairPositionY());
 
         // Normalize speed of the bullet
         if (directionDistance != 0) {
-            directionX = crosshair.getDirectionX() / directionDistance;
-            directionY = crosshair.getDirectionY() / directionDistance;
+            directionX = crosshair.getPreviousCrosshairPositionX() / directionDistance;
+            directionY = crosshair.getPreviousCrosshairPositionY() / directionDistance;
         }
 
         velocityX = directionX * MAX_SPEED;

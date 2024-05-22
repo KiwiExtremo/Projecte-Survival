@@ -1,4 +1,4 @@
-package com.example.survivalgame.object;
+package com.example.survivalgame.gameobject;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,13 +9,14 @@ import androidx.core.content.ContextCompat;
 
 import com.example.survivalgame.R;
 import com.example.survivalgame.Utils;
+import com.example.survivalgame.gamepanel.Joystick;
 
 /**
  * A Crosshair is an object that is used to know where the bullets will be fired.
  * The Crosshair class is an extension of a Circle, which in turn inherits from the GameObject class.
  */
 public class Crosshair extends Circle {
-    public static final int ORBIT_RADIUS = 300;
+    public static final int ORBIT_RADIUS = 250;
     public static final int CROSSHAIR_RADIUS = 15;
     private double previousCrosshairPositionX = 0;
     private double previousCrosshairPositionY = 0;
@@ -38,6 +39,14 @@ public class Crosshair extends Circle {
         orbitPaint.setPathEffect(new DashPathEffect(new float[]{(float) (10 * Math.PI), (float) (10 * Math.PI)}, (float)1.0));
     }
 
+    public double getPreviousCrosshairPositionX() {
+        return previousCrosshairPositionX;
+    }
+
+    public double getPreviousCrosshairPositionY() {
+        return previousCrosshairPositionY;
+    }
+
     @Override
     public void update() {
         double threshold = 0.25;
@@ -51,7 +60,7 @@ public class Crosshair extends Circle {
 
 
         // Normalize direction
-        if (Utils.getThreshold(directionX, threshold) != 0 || Utils.getThreshold(directionY, threshold) != 0) {
+        if (Utils.isInsideThreshold(directionX, threshold) || Utils.isInsideThreshold(directionY, threshold)) {
             double distance = Utils.getDistanceBetweenPoints(0, 0, directionX, directionY);
 
             crosshairPositionX = directionX / distance;

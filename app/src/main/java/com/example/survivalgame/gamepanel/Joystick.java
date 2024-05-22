@@ -1,4 +1,4 @@
-package com.example.survivalgame.object;
+package com.example.survivalgame.gamepanel;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

@@ -16,7 +16,7 @@ public class Utils {
         );
     }
 
-    public static int getThreshold(double value, double threshold) {
-        return (int) Math.abs(value / threshold);
+    public static boolean isInsideThreshold(double value, double threshold) {
+        return ((int) Math.abs(value / threshold)) > 0;
     }
 }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Survival Game</string>
 
+    <!-- Login strings -->
     <string name="text_view.title.sign_in">Sign in</string>
     <string name="text_view.title.register">Register</string>
     <string name="text_view.title.not_user">Not a user yet?</string>
@@ -24,4 +25,7 @@
     <string name="toast.login.successful">Login successful</string>
 
     <string name="google.sign_in.default_web_client">979601923902-mq8e7ph86es0tkafb2nqaksc3e7s4sif.apps.googleusercontent.com</string>
+
+    <!-- Game strings -->
+    <string name="game.game_over.text">Game Over!</string>
 </resources>

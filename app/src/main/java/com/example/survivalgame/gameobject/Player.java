@@ -1,4 +1,4 @@
-package com.example.survivalgame.object;
+package com.example.survivalgame.gameobject;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import com.example.survivalgame.gameengine.GameLoop;
 import com.example.survivalgame.R;
 import com.example.survivalgame.Utils;
+import com.example.survivalgame.gamepanel.Joystick;
 
 /**
  * A Player is the main character of the game, controllable by the user through a Joystick object.
@@ -25,7 +26,7 @@ public class Player extends Circle {
         super(context, ContextCompat.getColor(context, R.color.player), positionX, positionY, radius);
 
         this.joystick = joystick;
-        this.healthBar = new HealthBar(this);
+        this.healthBar = new HealthBar(context, this);
         this.currentHealthPoints = MAX_HEALTH_POINTS;
     }
 
@@ -59,5 +60,11 @@ public class Player extends Circle {
 
     public int getCurrentHealthPoints() {
         return currentHealthPoints;
+    }
+
+    public void setHealthPoints(int currentHealthPoints) {
+        if (currentHealthPoints >= 0) {
+            this.currentHealthPoints = currentHealthPoints;
+        }
     }
 }
