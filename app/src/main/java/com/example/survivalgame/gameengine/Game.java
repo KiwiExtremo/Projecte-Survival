@@ -41,7 +41,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private boolean bulletReady = false;
     private boolean showPlayerJoystick = false;
     private boolean showAimJoystick = false;
-    private double bulletAimDirectionX, bulletAimDirectionY;
     private GameOver gameOver;
     private Performance performance;
 
@@ -95,7 +94,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_MOVE:
-                if (((float) screenWidth / 2 - screenWidth * 0.1) > eventX && !showPlayerJoystick) {
+                if (((float) screenWidth / 2 - screenWidth * 0.1) > eventX && !showPlayerJoystick && pointerId != aimJoystickPointerId) {
                     // left side of the screen was pressed -> playerJoystick position will be moved to event position
                     playerJoystick.setPositionX(eventX);
                     playerJoystick.setPositionY(eventY);
@@ -107,7 +106,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
                 }
 
-                if (((float) screenWidth / 2 + screenWidth * 0.1) < eventX && !showAimJoystick) {
+                if (((float) screenWidth / 2 + screenWidth * 0.1) < eventX && !showAimJoystick && pointerId != playerJoystickPointerId) {
                     // right side of the screen was pressed -> aimJoystick position will be moved to event position
                     aimJoystick.setPositionX(eventX);
                     aimJoystick.setPositionY(eventY);
@@ -136,9 +135,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 } else if (aimJoystickPointerId == pointerId) {
                     // Since this joystick is the crosshair, prepare a bullet
                     bulletReady = true;
-
-                    bulletAimDirectionX = aimJoystick.getActuatorX();
-                    bulletAimDirectionY = aimJoystick.getActuatorY();
 
                     // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
                     aimJoystick.setIsPressed(false);
@@ -236,7 +232,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Create bullet if ready
         if (bulletReady) {
-            bulletList.add(new Bullet(getContext(), player, bulletAimDirectionX, bulletAimDirectionY));
+            bulletList.add(new Bullet(getContext(), player, crosshair));
             bulletReady = false;
         }
 
@@ -277,5 +273,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
+    }
+
+    public void pause() {
+        gameLoop.stopLoop();
     }
 }
