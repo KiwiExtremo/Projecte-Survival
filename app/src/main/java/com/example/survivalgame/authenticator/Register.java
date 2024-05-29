@@ -22,11 +22,11 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class Register extends AppCompatActivity {
 
-    private EditText email, password;
-    private Button regist;
+    private EditText etUsername, etPassword, etPasswordConfirm;
+    private Button bRegister;
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
-    private TextView logNow;
+    private TextView goToLogin;
 
     @Override
     public void onStart() {
@@ -43,68 +43,79 @@ public class Register extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.regist_activity);
+        setContentView(R.layout.activity_register);
 
-        initialize();
+        fetchFromLayout();
 
-        regist.setOnClickListener(view -> {
-            progressBar.setVisibility(View.VISIBLE);
-            String email, password;
-            email = String.valueOf(Register.this.email.getText());
-            password = String.valueOf(Register.this.password.getText());
-
-            if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
-                Toast.makeText(Register.this, "Enter something", Toast.LENGTH_LONG);
-                return;
-            }
-
-            if(TextUtils.isEmpty(password)){
-                Toast.makeText(Register.this, "enter password", Toast.LENGTH_LONG);
-                return;
-            }
-
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            progressBar.setVisibility(View.GONE);
-                            if (task.isSuccessful()) {
-
-                                Toast.makeText(Register.this, "Acount Created.",
-                                        Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(intent);
-                                finish();
-
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Toast.makeText(Register.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-
-                            }
-                        }
-                    });
-
+        bRegister.setOnClickListener(view -> {
+            bOnClickRegisterUser();
         });
 
-        logNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        goToLogin.setOnClickListener(view -> {
+            bOnClickStartLoginActivity();
+        });
+    }
+
+    private void bOnClickStartLoginActivity() {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void bOnClickRegisterUser() {
+        progressBar.setVisibility(View.VISIBLE);
+        String email, password, passwordConfirm;
+
+        email = etUsername.getText().toString();
+        password = etPassword.getText().toString();
+        passwordConfirm = etPasswordConfirm.getText().toString();
+
+        if ("".equals(email)) {
+            etUsername.setError(getString(R.string.edit_text_error_user_email));
+            progressBar.setVisibility(View.GONE);
+            return;
+        }
+
+        if ("".equals(password)) {
+            etPassword.setError(getString(R.string.edit_text_error_password));
+            progressBar.setVisibility(View.GONE);
+            return;
+        }
+
+        if ("".equals(passwordConfirm)) {
+            etPasswordConfirm.setError(getString(R.string.edit_text_error_password));
+            progressBar.setVisibility(View.GONE);
+            return;
+        }
+
+        createUserWithMAuth(email, password);
+    }
+
+    private void createUserWithMAuth(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            progressBar.setVisibility(View.GONE);
+            if (task.isSuccessful()) {
+
+                Toast.makeText(Register.this, "Acount Created.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
+
+            } else {
+                // If registering fails, display a message to the user.
+                Toast.makeText(Register.this, "Failed to register.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void initialize() {
+    private void fetchFromLayout() {
         mAuth = FirebaseAuth.getInstance();
-        email = findViewById(R.id.etRegistEmail);
-        password = findViewById(R.id.etRegistPassword);
-        regist = findViewById(R.id.bRegister);
-        progressBar = findViewById(R.id.progresBarR);
-        logNow = findViewById(R.id.tvLoginNow);
-
+        etUsername = findViewById(R.id.etUsername);
+        etPassword = findViewById(R.id.etPassword);
+        etPasswordConfirm = findViewById(R.id.etPasswordConfirm);
+        bRegister = findViewById(R.id.bRegister);
+        progressBar = findViewById(R.id.progresBar);
+        goToLogin = findViewById(R.id.tvAlreadyRegistered);
     }
 
 }

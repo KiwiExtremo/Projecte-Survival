@@ -18,7 +18,7 @@ import com.example.survivalgame.gamepanel.Joystick;
 public class Crosshair extends Circle {
     public static final int ORBIT_RADIUS = 250;
     public static final int CROSSHAIR_RADIUS = 15;
-    private double previousCrosshairPositionX = 0;
+    private double previousCrosshairPositionX = 1;
     private double previousCrosshairPositionY = 0;
     private final Player player;
     private final Joystick joystick;

@@ -18,9 +18,10 @@ public class Performance {
         this.gameLoop = gameLoop;
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, int currentScore) {
         drawUPS(canvas);
         drawFPS(canvas);
+        drawScore(canvas, currentScore);
     }
 
     public void drawUPS(Canvas canvas) {
@@ -45,5 +46,15 @@ public class Performance {
         paint.setTextSize(50);
 
         canvas.drawText(context.getString(R.string.canvas_text_fps, avgFPS), 100, 200, paint);
+    }
+
+    public void drawScore(Canvas canvas, int currentScore) {
+        int color = ContextCompat.getColor(context, R.color.white);
+
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setTextSize(50);
+
+        canvas.drawText(context.getString(R.string.canvas_text_score, currentScore), 500, 100, paint);
     }
 }

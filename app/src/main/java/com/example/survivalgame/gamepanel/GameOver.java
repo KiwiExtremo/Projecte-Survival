@@ -22,15 +22,16 @@ public class GameOver {
     }
 
     public void draw(Canvas canvas) {
-        float textX = screenWidth / 2;
-        float textY = screenHeight / 2;
+        // TODO create a view and show it instead of adding a text on screen
+
+        float textSize = (float) screenHeight / 10;
+        float textX = (float) screenWidth / 2;
+        float textY = (float) screenHeight / 2;
 
         Paint paint = new Paint();
-
         paint.setColor(context.getColor(R.color.game_over));
-
-        float textSize = screenHeight / 10;
         paint.setTextSize(textSize);
+        paint.setTextAlign(Paint.Align.CENTER);
 
         canvas.drawText(context.getString(R.string.game_game_over_text), textX, textY, paint);
     }

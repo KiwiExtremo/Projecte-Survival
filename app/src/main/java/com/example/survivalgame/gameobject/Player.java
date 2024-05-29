@@ -16,7 +16,7 @@ import com.example.survivalgame.gamepanel.Joystick;
  */
 public class Player extends Circle {
     public static final double SPEED_PIXELS_PER_SECOND = 400.0;
-    public static final int MAX_HEALTH_POINTS = 10;
+    public static final int MAX_HEALTH_POINTS = 5;
     public static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
     private final Joystick joystick;
     private HealthBar healthBar;
@@ -62,9 +62,9 @@ public class Player extends Circle {
         return currentHealthPoints;
     }
 
-    public void setHealthPoints(int currentHealthPoints) {
-        if (currentHealthPoints >= 0) {
-            this.currentHealthPoints = currentHealthPoints;
+    public void setHealthPoints(int newHealthPoints) {
+        if (this.currentHealthPoints >= 0) {
+            this.currentHealthPoints = newHealthPoints;
         }
     }
 }

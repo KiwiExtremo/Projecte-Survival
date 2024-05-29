@@ -18,9 +18,7 @@
     <string name="button.login">Login</string>
     <string name="button.register">Register</string>
     <string name="button.forgot_password">Forgot your password?</string>
-
-    <string name="canvas.text.ups">UPS: %1$.5s</string>
-    <string name="canvas.text.fps">FPS: %1$.5s</string>
+    <string name="button.already_registered">Already registered? Log in now</string>
 
     <string name="toast.login.successful">Login successful</string>
 
@@ -28,4 +26,8 @@
 
     <!-- Game strings -->
     <string name="game.game_over.text">Game Over!</string>
+
+    <string name="canvas.text.ups">UPS: %1$.5s</string>
+    <string name="canvas.text.fps">FPS: %1$.5s</string>
+    <string name="canvas.text.score">Current score: %1$s</string>
 </resources>

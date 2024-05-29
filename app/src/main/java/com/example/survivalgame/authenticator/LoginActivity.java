@@ -91,6 +91,10 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        loginWithMAuth(email, password);
+    }
+
+    private void loginWithMAuth(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             progressBar.setVisibility(View.GONE);
             if (task.isSuccessful()) {
@@ -102,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                 // TODO check if auth fail is due to user not being in the database, password not patching user's, or other
                 Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
 
-                // (TEMPORARY FIX)
+                // TODO delete this (TEMPORARY FIX)
                 Intent i = new Intent(this, GameActivity.class);
 
                 startActivity(i);

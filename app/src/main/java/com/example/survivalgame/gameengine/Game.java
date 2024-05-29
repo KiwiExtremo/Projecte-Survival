@@ -3,6 +3,7 @@ package com.example.survivalgame.gameengine;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -37,7 +38,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private int playerJoystickPointerId = -1;
     private int aimJoystickPointerId = -1;
 
-    int screenHeight, screenWidth;
+    private int screenHeight, screenWidth, currentScore = 0;
     private boolean bulletReady = false;
     private boolean showPlayerJoystick = false;
     private boolean showAimJoystick = false;
@@ -69,10 +70,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     // Initialize the game objects
         // Create a new player
-        player = new Player(context, playerJoystick, 2 * 500, 500, 60);
+        player = new Player(context, playerJoystick, (float) screenWidth / 2, (float) screenHeight / 2, 60);
 
         // Create a new crosshair
-        crosshair = new Crosshair(context, player, aimJoystick, 2 * 500, 600);
+        crosshair = new Crosshair(context, player, aimJoystick, (float) screenWidth / 2, (float) screenHeight / 2);
 
         setFocusable(true);
     }
@@ -179,7 +180,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        performance.draw(canvas);
+        performance.draw(canvas, currentScore);
 
         crosshair.draw(canvas);
         player.draw(canvas);
@@ -202,6 +203,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         // When a player loses all their healthpoints, draw the Game Over
         if (player.getCurrentHealthPoints() <= 0) {
             gameOver.draw(canvas);
+
+            /*
+            Intent i = new Intent(this, GameOverActivity.class);
+            startActivity(i);
+             */
         }
     }
 
@@ -241,13 +247,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Remove the current enemy if it is colliding with the player or a bullet
         // by iterating through all enemies and bullets
-        enemyList.removeIf(enemy -> Circle.isColliding(enemy, player));
-
         Iterator<Enemy> enemyIterator = enemyList.iterator();
         while (enemyIterator.hasNext()) {
             Circle enemy = enemyIterator.next();
 
-            if (Circle.isColliding(enemy, player)) {
+            if (Circle.isColliding(player, enemy)) {
                 enemyIterator.remove();
 
                 // Reduce the player's health points
@@ -266,6 +270,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     bulletIterator.remove();
                     enemyIterator.remove();
 
+                    currentScore += 1;
                     // Stop checking collision of current enemy with the rest of the bullets since it collided with curent bullet
                     break;
                 }
