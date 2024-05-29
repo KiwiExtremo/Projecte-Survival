@@ -59,7 +59,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Create a new game loop
         gameLoop = new GameLoop(this, surfaceHolder);
 
-    // Initialize the game panels
+        // Initialize the game panels
         gameOver = new GameOver(context, screenWidth, screenHeight);
         performance = new Performance(context, gameLoop);
 
@@ -67,7 +67,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         playerJoystick = new Joystick((int) screenWidth / 4, (int) screenHeight / 2, 100, 60);
         aimJoystick = new Joystick((int) 3 * screenWidth / 4, (int) screenHeight / 2, 100, 60);
 
-    // Initialize the game objects
+        // Initialize the game objects
         // Create a new player
         player = new Player(context, playerJoystick, 2 * 500, 500, 60);
 
@@ -201,6 +201,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // When a player loses all their healthpoints, draw the Game Over
         if (player.getCurrentHealthPoints() <= 0) {
+            // TODO meter scores a firbase
             gameOver.draw(canvas);
         }
     }

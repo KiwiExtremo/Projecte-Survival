@@ -46,63 +46,54 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/text_view.title.register"
+                android:text="Home"
                 android:textSize="34sp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="12dp"
-                app:boxBackgroundColor="@android:color/transparent">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:textSize="20sp"
-                    android:hint="@string/edit_text.hint.user_email" />
-            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="12dp"
-                app:boxBackgroundColor="@android:color/transparent">
+            <TextView
+                android:id="@+id/tvUser1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User1"
+                android:layout_gravity="center"
+                android:textSize="20dp"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:hint="@string/edit_text.hint.password"
-                    android:password="true"
-                    android:textSize="20sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/tvUser2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User2"
+                android:layout_gravity="center"
+                android:textSize="20dp"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="12dp"
-                app:boxBackgroundColor="@android:color/transparent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPasswordConfirm"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/edit_text.hint.confirm_password"
-                    android:password="true"
-                    android:textSize="20sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="8dp"
+                android:text="Searching for players..."
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                />
 
             <Button
-                android:id="@+id/bLogin"
+                android:id="@+id/bPlay1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="24dp"
-                android:text="@string/button.register" />
+                android:text="Play" />
+
+
+
+            <Button
+                android:id="@+id/bLogOut1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:text="LogOut" />
 
         </LinearLayout>
     </ScrollView>
