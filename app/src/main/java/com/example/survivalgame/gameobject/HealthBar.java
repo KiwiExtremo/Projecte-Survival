@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import androidx.core.content.ContextCompat;
 
 import com.example.survivalgame.R;
+import com.example.survivalgame.gameengine.Game;
 
 /**
  * The healthBar class displays the player's health on the screen.
@@ -14,14 +15,16 @@ import com.example.survivalgame.R;
 public class HealthBar {
 
     private final Player player;
-    private int hpWidth, hpHeight, hpMargin;
-    private Paint borderPaint, healthPaint;
+    private int hpWidth, hpHeight, hpMargin, hpCorners;
+    private Paint borderPaint, healthPaint, whitePaint, blackPaint;
+    float distanceToPlayer = 90;
 
     public HealthBar(Context context, Player player) {
         this.player = player;
-        hpWidth = 100;
-        hpHeight = 20;
-        hpMargin = 2;
+        hpWidth = 500;
+        hpHeight = 80;
+        hpMargin = 50;
+        hpCorners = 15;
 
         // Create border paint
         this.borderPaint = new Paint();
@@ -34,13 +37,19 @@ public class HealthBar {
         int healthColor = ContextCompat.getColor(context, R.color.healthbar_color);
 
         healthPaint.setColor(healthColor);
+
+        // Set color of the white middle glow
+        whitePaint = new Paint();
+        whitePaint.setColor(ContextCompat.getColor(context, R.color.white));
+
+        // Set color of the black center
+        blackPaint = new Paint();
+        blackPaint.setColor(ContextCompat.getColor(context, R.color.black));
     }
 
     public void draw(Canvas canvas) {
         float playerX = (float) player.getPositionX();
         float playerY = (float) player.getPositionY();
-
-        float distanceToPlayer = 90;
 
         float healthPointPercent = (float) player.getCurrentHealthPoints() / Player.MAX_HEALTH_POINTS;
 
@@ -64,5 +73,33 @@ public class HealthBar {
         healthTop = healthBottom - healthHeight;
 
         canvas.drawRect(healthLeft, healthTop, healthRight, healthBottom, healthPaint);
+    }
+
+    public void drawNeon(Canvas canvas, int screenHeight, int screenWidth) {
+        float healthPointPercent = (float) player.getCurrentHealthPoints() / Player.MAX_HEALTH_POINTS;
+
+        // Get the health coordinates
+        float borderLeft, borderTop, borderRight, borderBottom;
+
+        borderLeft = screenWidth - (hpWidth * healthPointPercent) - hpMargin;
+        borderRight = screenWidth - hpMargin;
+        borderBottom = (float) hpHeight + hpMargin;
+        borderTop =  hpMargin;
+
+        // Draw the outer glow, the white middle part, the inner glow, and the black center
+        canvas.drawRoundRect(borderLeft, borderTop, borderRight, borderBottom, hpCorners, hpCorners, healthPaint);
+        canvas.drawRoundRect(borderLeft + 5, borderTop + 5, borderRight - 5, borderBottom - 5, hpCorners, hpCorners, whitePaint);
+        canvas.drawRoundRect(borderLeft + 10, borderTop + 10, borderRight - 10, borderBottom - 10, hpCorners, hpCorners, healthPaint);
+        canvas.drawRoundRect(borderLeft + 15, borderTop + 15, borderRight - 15, borderBottom - 15, hpCorners, hpCorners, blackPaint);
+
+        // Draw the segments dividing each health point
+        for (int i = 0; i < player.getCurrentHealthPoints(); i++) {
+            if (i != 0 && player.getCurrentHealthPoints() != 0) {
+                float segmentBorder = borderLeft + (i * ((float) hpWidth / Player.MAX_HEALTH_POINTS));
+
+                canvas.drawRect(segmentBorder - 7, borderTop + 15, segmentBorder + 8, borderBottom - 15, healthPaint);
+                canvas.drawRect(segmentBorder - 2, borderTop + 5, segmentBorder + 3, borderBottom - 5, whitePaint);
+            }
+        }
     }
 }

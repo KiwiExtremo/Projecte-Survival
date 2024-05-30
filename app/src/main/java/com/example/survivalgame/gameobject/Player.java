@@ -20,13 +20,15 @@ public class Player extends Circle {
     public static final double MAX_SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
     private final Joystick joystick;
     private HealthBar healthBar;
-    private int currentHealthPoints;
+    private int currentHealthPoints, screenHeight, screenWidth;
 
-    public Player(Context context, Joystick joystick, double positionX, double positionY, double radius) {
+    public Player(Context context, Joystick joystick, double positionX, double positionY, int screenHeight, int screenWidth, double radius) {
         super(context, ContextCompat.getColor(context, R.color.player), positionX, positionY, radius);
 
         this.joystick = joystick;
         this.healthBar = new HealthBar(context, this);
+        this.screenHeight = screenHeight;
+        this.screenWidth = screenWidth;
         this.currentHealthPoints = MAX_HEALTH_POINTS;
     }
 
@@ -51,11 +53,10 @@ public class Player extends Circle {
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
+    public void drawNeon(Canvas canvas) {
+        super.drawNeon(canvas);
 
-        healthBar.draw(canvas);
-
+        healthBar.drawNeon(canvas, screenHeight, screenWidth);
     }
 
     public int getCurrentHealthPoints() {

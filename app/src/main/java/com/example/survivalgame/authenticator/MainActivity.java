@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else {
             userTextView.setText(user.getEmail());
+            // TODO no hacer nada, para que el usuario pueda elegir que hacer (log out, ver puntuaciones, etc)
         }
 
     }

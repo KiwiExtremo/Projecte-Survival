@@ -38,7 +38,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private int playerJoystickPointerId = -1;
     private int aimJoystickPointerId = -1;
 
-    private int screenHeight, screenWidth, currentScore = 0;
+    public int screenHeight, screenWidth, currentScore = 0;
     private boolean bulletReady = false;
     private boolean showPlayerJoystick = false;
     private boolean showAimJoystick = false;
@@ -70,12 +70,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     // Initialize the game objects
         // Create a new player
-        player = new Player(context, playerJoystick, (float) screenWidth / 2, (float) screenHeight / 2, 60);
+        player = new Player(context, playerJoystick, (float) screenWidth / 2, (float) screenHeight / 2, screenHeight, screenWidth, 60);
 
         // Create a new crosshair
         crosshair = new Crosshair(context, player, aimJoystick, (float) screenWidth / 2, (float) screenHeight / 2);
 
         setFocusable(true);
+    }
+
+    public GameLoop getGameLoop() {
+        return gameLoop;
     }
 
     @Override
@@ -104,7 +108,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     playerJoystick.setIsPressed(true);
 
                     showPlayerJoystick = true;
-
                 }
 
                 if (((float) screenWidth / 2 + screenWidth * 0.1) < eventX && !showAimJoystick && pointerId != playerJoystickPointerId) {
@@ -168,12 +171,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
     }
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
-
     }
 
     @Override
@@ -183,7 +184,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         performance.draw(canvas, currentScore);
 
         crosshair.draw(canvas);
-        player.draw(canvas);
+        player.drawNeon(canvas);
 
         if (showPlayerJoystick) {
             playerJoystick.draw(canvas);
@@ -193,7 +194,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         for (Enemy enemy : enemyList) {
-            enemy.draw(canvas);
+            enemy.drawNeon(canvas);
         }
 
         for (Bullet bullet : bulletList) {
@@ -222,6 +223,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         aimJoystick.update();
 
         player.update();
+
         crosshair.update();
 
         // Enemies are created dynamically here

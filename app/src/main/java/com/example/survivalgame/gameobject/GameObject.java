@@ -6,7 +6,7 @@ import android.graphics.Canvas;
  * The abstract GameObject class is the foundation of all world objects of the game.
  */
 public abstract class GameObject {
-    protected double positionX, positionY;
+    public double positionX, positionY;
     protected double velocityX = 0, velocityY = 0;
     protected double directionX = 0, directionY = 0;
 

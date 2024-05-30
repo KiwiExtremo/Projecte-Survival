@@ -21,10 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".authenticator.RegisterActivity"
-            android:exported="false" />
         <activity android:name=".authenticator.LoginActivity"
+            android:exported="false" />
+        <activity android:name=".authenticator.RegisterActivity"
             android:exported="false" />
         <activity android:name=".authenticator.ResetPasswordActivity"
             android:exported="false" />

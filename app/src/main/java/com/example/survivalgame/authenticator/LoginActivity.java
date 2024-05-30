@@ -1,11 +1,10 @@
 package com.example.survivalgame.authenticator;
 
-import static android.content.ContentValues.TAG;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -27,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,6 +35,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 1;
     private EditText etUserMail, etPassword;
+    private TextInputLayout etPasswordLayout;
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
 
@@ -86,7 +87,22 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if ("".equals(password)) {
-            etPassword.setError(getString(R.string.edit_text_error_password));
+            etPasswordLayout.setError(getString(R.string.edit_text_error_password));
+            etPassword.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    etPasswordLayout.setError(null);
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+
             progressBar.setVisibility(View.GONE);
             return;
         }
@@ -185,6 +201,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void fetchFromActivity() {
         etUserMail = findViewById(R.id.etUsername);
+        etPasswordLayout = findViewById(R.id.etPasswordLayout);
         etPassword = findViewById(R.id.etPassword);
         mAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progressBarLogin);

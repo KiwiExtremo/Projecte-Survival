@@ -1,13 +1,16 @@
 package com.example.survivalgame;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.survivalgame.gameengine.Game;
 
 public class GameActivity extends AppCompatActivity {
     private Game game;
+    private MediaPlayer mp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,6 +18,8 @@ public class GameActivity extends AppCompatActivity {
 
         game = new Game(this);
         setContentView(game);
+
+        startBGMusic();
     }
 
     @Override
@@ -42,5 +47,64 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void startBGMusic() {
+        mp = MediaPlayer.create(GameActivity.this, R.raw.synthwave_bg_music);
+
+        mp.setLooping(true);
+        mp.start();
+    }
+    private void showDialogGameOver(int endCode, int score) {
+        runOnUiThread(() -> {
+            // setup the alert builder
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.dialog_game_over_title));
+
+            if (endCode == 0) {
+                builder.setMessage(getString(R.string.dialog_game_over_body_win, score));
+
+            } else {
+                builder.setMessage(getString(R.string.dialog_game_over_body_lose, score));
+            }
+            // add the buttons
+            builder.setPositiveButton(getString(R.string.dialog_game_over_positive), (dialog, which) -> {
+                finish();
+            });
+
+            // create and show the alert dialog
+            AlertDialog dialog = builder.create();
+            dialog.setCancelable(false);
+            dialog.show();
+        });
+    }
+
+    private void showDialogGiveUp() {
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.dialog_give_up_title));
+        builder.setMessage(getString(R.string.dialog_give_up_body));
+
+        // add the buttons
+        builder.setPositiveButton(getString(R.string.dialog_give_up_positive), (dialog, which) -> {
+            // TODO save score to Firebase
+            showDialogGameOver(0, 0);
+        });
+
+        builder.setNegativeButton(getString(R.string.dialog_give_up_negative), (dialog, which) -> {
+            // Do nothing, just close dialog box
+            game.getGameLoop().setPaused(false);
+        });
+
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Avoid closing the game when pressing the back button by disabling the call to the superclass.
+        game.getGameLoop().setPaused(true);
+        showDialogGiveUp();
     }
 }

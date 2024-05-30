@@ -60,12 +60,14 @@
                     android:id="@+id/etUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:layout_marginBottom="12dp"
                     android:textSize="20sp"
                     android:hint="@string/edit_text.hint.user_email" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etPasswordLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="12dp"
@@ -76,6 +78,7 @@
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:hint="@string/edit_text.hint.password"
                     android:inputType="text|textPassword"
                     android:textSize="20sp" />
@@ -105,11 +108,13 @@
 
             <TextView
                 android:id="@+id/tvForgotPassword"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
+                android:paddingVertical="5dp"
                 android:text="@string/button.forgot_password"
                 android:textAlignment="textEnd"
+                android:layout_gravity="end"
                 android:onClick="bOnClickResetPasswordActivity" />
 
             <TextView
