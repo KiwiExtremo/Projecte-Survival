@@ -81,9 +81,10 @@ public class Crosshair extends Circle {
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
-
+    public void drawFilledNeon(Canvas canvas) {
+        // Draw the orbit first so it stays under the crosshair
         canvas.drawCircle((float) player.getPositionX(), (float) player.getPositionY(), ORBIT_RADIUS, orbitPaint);
+
+        super.drawFilledNeon(canvas);
     }
 }

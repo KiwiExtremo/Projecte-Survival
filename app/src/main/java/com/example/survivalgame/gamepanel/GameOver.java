@@ -29,7 +29,7 @@ public class GameOver {
         float textY = (float) screenHeight / 2;
 
         Paint paint = new Paint();
-        paint.setColor(context.getColor(R.color.game_over));
+        paint.setColor(context.getColor(R.color.score));
         paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.CENTER);
 

@@ -10,8 +10,8 @@ import com.example.survivalgame.R;
 
 /**
  * Circle is an abstract class that inherits from the GameObject class, and it
- * implements a draw method to draw objects as circles. It has different draw methods, since different
- * objects will be drawn differently.
+ * implements a draw method to draw objects as neon circles. It has different draw methods,
+ * since different objects will be drawn differently.
  */
 public abstract class Circle extends GameObject {
     protected double radius;
@@ -40,9 +40,10 @@ public abstract class Circle extends GameObject {
     }
 
     /**
-     * isColliding checks if two circle objects are colliding based on their positions and radii
-     * @param object1 first object to check collision
-     * @param object2 second object to check collision
+     * isColliding checks if two circle objects are colliding based on their positions and radii.
+     *
+     * @param object1 first object to check collision.
+     * @param object2 second object to check collision.
      * @return returns true if the passed objects are colliding (they are overlapping). Returns
      * false otherwise.
      */
@@ -54,16 +55,22 @@ public abstract class Circle extends GameObject {
     }
 
     /**
-     * draw will draw a circle on the canvas, used for non-neon circles.
-     * @param canvas the canvas on which the circles will be drawn
+     * drawFilledNeon will draw a couple of circles on the canvas, used for filled neon circles.
+     *
+     * @param canvas the canvas on which the circles will be drawn.
      */
-    public void draw(Canvas canvas) {
+    public void drawFilledNeon(Canvas canvas) {
+        // Draw outer glow
         canvas.drawCircle((float) positionX, (float) positionY, (float) radius, outerPaint);
+
+        // Draw white center
+        canvas.drawCircle((float) positionX, (float) positionY, (float) radius - 5, whitePaint);
     }
 
     /**
-     * drawNeon will draw multiple circles on the canvas, in order to simulate a glowing neon circle.
-     * @param canvas the canvas on which the circles will be drawn
+     * drawNeon will draw multiple circles on the canvas, in order to simulate a glowing neon ring.
+     *
+     * @param canvas the canvas on which the circles will be drawn.
      */
     public void drawNeon(Canvas canvas) {
         // Draw outer glow

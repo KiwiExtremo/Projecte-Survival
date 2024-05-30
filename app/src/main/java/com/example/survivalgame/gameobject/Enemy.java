@@ -30,12 +30,13 @@ public class Enemy extends Circle {
 
     /**
      * Enemy is an overload constructor used for spawning enemies in random locations
-     * @param context context of the invoking activity
-     * @param player player object the enemy will chase
+     *
+     * @param context      context of the invoking activity
+     * @param screenHeight
+     * @param screenWidth
+     * @param player       player object the enemy will chase
      */
-    public Enemy(Context context, Player player) {
-        // TODO change 1000 to max screen size - 20% margins
-        // TODO check that the spawn point is not too close to the player
+    public Enemy(Context context, int screenHeight, int screenWidth, Player player) {
         super(
                 context,
                 ContextCompat.getColor(context, R.color.enemy),
@@ -43,6 +44,16 @@ public class Enemy extends Circle {
                 Math.random() * 1000,
                 ENEMY_RADIUS
         );
+
+        // TODO change 1000 to max screen size - 20% margins
+        // TODO check that the spawn point is not too close to the player
+        int positionX, positionY;
+
+        do {
+            positionX = (int) (Math.random() * (screenWidth * 0.8));
+            positionY = (int) (Math.random() * (screenHeight * 0.8));
+
+        } while (Circle.isColliding(player, new Circle(positionX, positionY)));
 
         this.player = player;
     }

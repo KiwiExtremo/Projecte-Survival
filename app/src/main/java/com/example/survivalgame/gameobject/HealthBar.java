@@ -17,7 +17,6 @@ public class HealthBar {
     private final Player player;
     private int hpWidth, hpHeight, hpMargin, hpCorners;
     private Paint borderPaint, healthPaint, whitePaint, blackPaint;
-    float distanceToPlayer = 90;
 
     public HealthBar(Context context, Player player) {
         this.player = player;
@@ -45,34 +44,6 @@ public class HealthBar {
         // Set color of the black center
         blackPaint = new Paint();
         blackPaint.setColor(ContextCompat.getColor(context, R.color.black));
-    }
-
-    public void draw(Canvas canvas) {
-        float playerX = (float) player.getPositionX();
-        float playerY = (float) player.getPositionY();
-
-        float healthPointPercent = (float) player.getCurrentHealthPoints() / Player.MAX_HEALTH_POINTS;
-
-        // Draw the border
-        float borderLeft, borderTop, borderRight, borderBottom;
-        borderLeft = playerX - (float) hpWidth / 2;
-        borderRight = playerX + (float) hpWidth / 2;
-        borderBottom = playerY - distanceToPlayer;
-        borderTop = borderBottom - hpHeight;
-
-        canvas.drawRect(borderLeft, borderTop, borderRight, borderBottom, borderPaint);
-
-        // Draw the health
-        float healthLeft, healthTop, healthRight, healthBottom, healthWidth, healthHeight;
-        healthWidth = hpWidth - 2 * hpMargin;
-        healthHeight = hpHeight - 2 * hpMargin;
-
-        healthLeft = borderLeft + hpMargin;
-        healthRight = healthLeft + (healthWidth * healthPointPercent);
-        healthBottom = borderBottom - hpMargin;
-        healthTop = healthBottom - healthHeight;
-
-        canvas.drawRect(healthLeft, healthTop, healthRight, healthBottom, healthPaint);
     }
 
     public void drawNeon(Canvas canvas, int screenHeight, int screenWidth) {

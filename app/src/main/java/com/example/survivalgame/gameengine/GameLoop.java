@@ -6,9 +6,9 @@ import android.view.SurfaceHolder;
 public class GameLoop extends Thread {
     public static final double MAX_UPS = 60.0;
     public static final double UPS_PERIOD = 1E+3 / MAX_UPS;
-    private boolean isRunning = false, paused = false;
-    private SurfaceHolder surfaceHolder;
-    private Game game;
+    private boolean isRunning = false, gameFinished = false;
+    private final SurfaceHolder surfaceHolder;
+    private final Game game;
     private double averageUPS;
     private double averageFPS;
 
@@ -21,9 +21,10 @@ public class GameLoop extends Thread {
         isRunning = running;
     }
 
-    public void setPaused(boolean paused) {
-        this.paused = paused;
+    public void setGameFinished(boolean gameFinished) {
+        this.gameFinished = gameFinished;
     }
+
     public double getAverageUPS() {
         return averageUPS;
     }
@@ -64,7 +65,7 @@ public class GameLoop extends Thread {
         // Game loop
         Canvas canvas = null;
         startTime = System.currentTimeMillis();
-        while (true) {
+        while (!gameFinished) {
             while (isRunning) {
                 // Try to update and render the game
                 try {
@@ -127,14 +128,6 @@ public class GameLoop extends Thread {
                     frameCount = 0;
 
                     startTime = System.currentTimeMillis();
-                }
-
-                while (paused) {
-                    try {
-                        wait();
-                    } catch(InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         }

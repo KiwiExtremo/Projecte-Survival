@@ -35,7 +35,8 @@ public abstract class GameObject {
         return directionY;
     }
 
-    public abstract void draw(Canvas canvas);
+    public abstract void drawFilledNeon(Canvas canvas);
+
     public abstract void update();
 
     /**

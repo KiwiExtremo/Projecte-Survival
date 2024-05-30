@@ -3,7 +3,6 @@ package com.example.survivalgame.gameengine;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -183,7 +182,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         performance.draw(canvas, currentScore);
 
-        crosshair.draw(canvas);
+        crosshair.drawFilledNeon(canvas);
         player.drawNeon(canvas);
 
         if (showPlayerJoystick) {
@@ -198,7 +197,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         for (Bullet bullet : bulletList) {
-            bullet.draw(canvas);
+            bullet.drawFilledNeon(canvas);
         }
 
         // When a player loses all their healthpoints, draw the Game Over
@@ -228,7 +227,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Enemies are created dynamically here
         if (Enemy.readyToSpawn()) {
-            enemyList.add(new Enemy(getContext(), player));
+            enemyList.add(new Enemy(getContext(), screenHeight, screenWidth, player));
         }
 
         // Update state of each enemy

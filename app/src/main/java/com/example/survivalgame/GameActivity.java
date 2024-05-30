@@ -1,5 +1,6 @@
 package com.example.survivalgame;
 
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
@@ -69,6 +70,7 @@ public class GameActivity extends AppCompatActivity {
             }
             // add the buttons
             builder.setPositiveButton(getString(R.string.dialog_game_over_positive), (dialog, which) -> {
+                game.getGameLoop().setGameFinished(true);
                 finish();
             });
 
@@ -92,19 +94,24 @@ public class GameActivity extends AppCompatActivity {
         });
 
         builder.setNegativeButton(getString(R.string.dialog_give_up_negative), (dialog, which) -> {
-            // Do nothing, just close dialog box
-            game.getGameLoop().setPaused(false);
+            // Resume the game state
+            game.getGameLoop().setRunning(true);
         });
 
         // create and show the alert dialog
         AlertDialog dialog = builder.create();
         dialog.show();
+
+        dialog.setOnCancelListener(dialog1 -> {
+            // Do the same as negative button you touch outside of dialog bounds
+            game.getGameLoop().setRunning(true);
+        });
     }
 
     @Override
     public void onBackPressed() {
         // Avoid closing the game when pressing the back button by disabling the call to the superclass.
-        game.getGameLoop().setPaused(true);
+        game.getGameLoop().setRunning(false);
         showDialogGiveUp();
     }
 }
