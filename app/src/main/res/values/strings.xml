@@ -5,6 +5,7 @@
     <string name="text_view.title.sign_in">Sign in</string>
     <string name="text_view.title.register">Register</string>
     <string name="text_view.title.not_user">Not a user yet?</string>
+    <string name="text_view.title.forgot_password">Password recovery</string>
     <string name="text_view.user_email">Email:</string>
     <string name="text_view.password">Password:</string>
 
@@ -18,9 +19,16 @@
     <string name="button.login">Login</string>
     <string name="button.register">Register</string>
     <string name="button.forgot_password">Forgot your password?</string>
-    <string name="button.already_registered">Already registered? Log in now</string>
+    <string name="button.reset_password">Reset password</string>
+    <string name="button.already_registered">Have an account? Log in now!</string>
+    <string name="button.remember_password">You remembered? Log in now!</string>
 
     <string name="toast.login.successful">Login successful</string>
+    <string name="toast.recovery_email.unsuccessful">There was a problem sending the email</string>
+
+    <string name="dialog.recovery_email.title">Email sent</string>
+    <string name="dialog.recovery_email.body">An email has been sent to $s. Please check your email and follow the steps.</string>
+    <string name="dialog.recovery_email.positive">I understand!</string>
 
     <string name="google.sign_in.default_web_client">979601923902-mq8e7ph86es0tkafb2nqaksc3e7s4sif.apps.googleusercontent.com</string>
 

@@ -1,8 +1,5 @@
 package com.example.survivalgame.authenticator;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,14 +8,15 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.survivalgame.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ResetPasswordActivity extends AppCompatActivity {
-    private EditText email;
-    private Button send;
+    private EditText etEmail;
+    private Button bSend;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
 
@@ -26,40 +24,82 @@ public class ResetPasswordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_pasword);
+
         initialize();
 
-        send.setOnClickListener(view -> {
+        bSend.setOnClickListener(view -> {
             progressBar.setVisibility(View.VISIBLE);
-            String mail = email.getText().toString();
+            String email = etEmail.getText().toString();
 
-            if(mail.isEmpty()){
-                Toast.makeText(getApplicationContext(), "Enter email", Toast.LENGTH_LONG).show();
+            if ("".equals(email)) {
+                etEmail.setError(getString(R.string.edit_text_error_user_email));
                 progressBar.setVisibility(View.GONE);
+
             } else {
-                resetPassword();
+                resetPassword(email);
             }
         });
     }
 
-    private void resetPassword() {
+    private void resetPassword(String email) {
+        boolean emailInDB = checkEmailOnFirebase(email);
 
-        mAuth.sendPasswordResetEmail(email.getText().toString()).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(getApplicationContext(), "Email sent", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(i);
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), "Can't send email", Toast.LENGTH_SHORT).show();
-            }
-            progressBar.setVisibility(View.GONE);
+        if (emailInDB) {
+            mAuth.sendPasswordResetEmail(etEmail.getText().toString()).addOnCompleteListener(task -> {
+                progressBar.setVisibility(View.GONE);
+                if (task.isSuccessful()) {
+                    showDialogEmailSent(email);
+
+                } else {
+                    Toast.makeText(this, getString(R.string.toast_recovery_email_unsuccessful), Toast.LENGTH_LONG).show();
+                }
+            });
+
+        } else {
+            // The dialog is shown, but the mail is not sent. The user will not know this, so as
+            // to preserve as much privacy and sensitive data as possible
+            showDialogEmailSent(email);
+        }
+
+    }
+
+    private boolean checkEmailOnFirebase(String email) {
+        // TODO checkear que en la DB sta el email
+
+        return false;
+    }
+
+    private void startLoginActivity() {
+        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    private void showDialogEmailSent(String email) {
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.dialog_recovery_email_title));
+
+        builder.setMessage(getString(R.string.dialog_recovery_email_body, email));
+
+        // add the buttons
+        builder.setPositiveButton(getString(R.string.dialog_recovery_email_positive), (dialog, which) -> {
+            startLoginActivity();
+
+            finish();
         });
+
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
     private void initialize() {
-        email = findViewById(R.id.etEmailReset);
-        send = findViewById(R.id.bSendEmail);
+        etEmail = findViewById(R.id.etResetEmail);
+        bSend = findViewById(R.id.bResetPassword);
+        progressBar = findViewById(R.id.progresBar);
+
         mAuth = FirebaseAuth.getInstance();
-        progressBar = findViewById(R.id.progresBarR);
     }
 }

@@ -203,11 +203,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         // When a player loses all their healthpoints, draw the Game Over
         if (player.getCurrentHealthPoints() <= 0) {
             gameOver.draw(canvas);
-
-            /*
-            Intent i = new Intent(this, GameOverActivity.class);
-            startActivity(i);
-             */
         }
     }
 
@@ -222,7 +217,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         aimJoystick.update();
 
         player.update();
-
         crosshair.update();
 
         // Enemies are created dynamically here

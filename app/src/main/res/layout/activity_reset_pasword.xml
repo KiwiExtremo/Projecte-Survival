@@ -1,52 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     tools:context=".authenticator.ResetPasswordActivity">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="15"
-        android:inputType="textEmailAddress">
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etEmailReset"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:hint="Email"
-            />
+            android:orientation="vertical"
+            android:padding="36dp">
 
-    </com.google.android.material.textfield.TextInputLayout>
-<!--    <EditText
-        android:id="@+id/etEmailReset"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="email"
-        android:inputType="textEmailAddress" />-->
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="36dp"
+                app:srcCompat="@drawable/ic_launcher_foreground"
+                tools:srcCompat="@drawable/ic_launcher_foreground" />
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progresBarR"
-        android:visibility="gone">
-    </ProgressBar>
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/text_view.title.forgot_password"
+                android:textSize="34sp"
+                android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/bSendEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Send Email"/>
-</LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="12dp"
+                app:boxBackgroundColor="@android:color/transparent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etResetEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textSize="20sp"
+                    android:hint="@string/edit_text.hint.user_email" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/bResetPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/button.reset_password" />
+
+            <TextView
+                android:id="@+id/tvAlreadyRegistered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:paddingVertical="5dp"
+                android:text="@string/button.remember_password"
+                android:layout_gravity="end"
+                android:textAlignment="textEnd" />
+
+            <ProgressBar
+                android:id="@+id/progresBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+            </ProgressBar>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
