@@ -1,5 +1,6 @@
 package com.example.survivalgame.authenticator;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -15,6 +16,11 @@ import android.widget.Toast;
 
 import com.example.survivalgame.R;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -120,6 +126,11 @@ public class RegisterActivity extends AppCompatActivity {
         createUserWithMAuth(email, password);
     }
 
+            if (!password.equals(confirmPassword)) {
+                Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.INVISIBLE);
+                return;
+            }
     private void createUserWithMAuth(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             progressBar.setVisibility(View.GONE);
@@ -148,5 +159,4 @@ public class RegisterActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progresBar);
         goToLogin = findViewById(R.id.tvAlreadyRegistered);
     }
-
 }
