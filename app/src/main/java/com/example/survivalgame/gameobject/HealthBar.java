@@ -3,11 +3,12 @@ package com.example.survivalgame.gameobject;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.survivalgame.R;
-import com.example.survivalgame.gameengine.Game;
 
 /**
  * The healthBar class displays the player's health on the screen.
@@ -43,7 +44,8 @@ public class HealthBar {
 
         // Set color of the black center
         blackPaint = new Paint();
-        blackPaint.setColor(ContextCompat.getColor(context, R.color.black));
+        blackPaint.setColor(ContextCompat.getColor(context, R.color.transparent));
+        blackPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     }
 
     public void drawNeon(Canvas canvas, int screenHeight, int screenWidth) {

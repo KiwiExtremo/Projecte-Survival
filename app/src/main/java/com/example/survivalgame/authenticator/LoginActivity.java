@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
 
             } else {
                 // TODO check if auth fail is due to user not being in the database, password not patching user's, or other
-                Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.toast_login_auth_failed), Toast.LENGTH_SHORT).show();
 
                 // TODO delete this (TEMPORARY FIX)
                 Intent i = new Intent(this, GameActivity.class);

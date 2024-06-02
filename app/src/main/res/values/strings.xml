@@ -24,10 +24,11 @@
     <string name="button.remember_password">You remembered? Log in now!</string>
 
     <string name="toast.login.successful">Login successful</string>
+    <string name="toast.login.auth_failed">Authentication failed</string>
     <string name="toast.recovery_email.unsuccessful">There was a problem sending the email</string>
 
     <string name="dialog.recovery_email.title">Email sent</string>
-    <string name="dialog.recovery_email.body">An email has been sent to $s. Please check your email and follow the steps.</string>
+    <string name="dialog.recovery_email.body">An email has been sent to %s. Please check your email and follow the steps.</string>
     <string name="dialog.recovery_email.positive">I understand!</string>
 
     <string name="google.sign_in.default_web_client">979601923902-mq8e7ph86es0tkafb2nqaksc3e7s4sif.apps.googleusercontent.com</string>
@@ -44,8 +45,23 @@
     <string name="dialog.game_over.body.lose">Too bad! You lost. Your score is %d points.</string>
     <string name="dialog.game_over.positive">Got it!</string>
 
-    <string name="dialog.give_up.title">Give up?</string>
-    <string name="dialog.give_up.body">Are you sure you want give up?</string>
-    <string name="dialog.give_up.positive">I give up</string>
-    <string name="dialog.give_up.negative">Keep trying</string>
+    <string name="dialog.pause.title">Game paused</string>
+    <string name="dialog.pause.body">The game is paused. What do you want to do?</string>
+    <string name="dialog.pause.positive">Keep trying</string>
+    <string name="dialog.pause.neutral">I give up</string>
+    <string name="dialog.pause.negative">Help</string>
+
+    <!-- Tutorial strings -->
+    <string name="text_view.tutorial.movement_joystick">Press and hold anywhere inside this area and a virtual joystick used to move your character will appear</string>
+    <string name="text_view.tutorial.movement">If you slide it in any direction, your character will move too</string>
+    <string name="text_view.tutorial.shooting_joystick">Press and hold anywhere inside this area and a virtual joystick used to aim will appear</string>
+    <string name="text_view.tutorial.shooting">If you slide it in any direction, the crosshair used to aim will move too</string>
+    <string name="text_view.tutorial.releasing">When you release your finger, a bullet will shoot in the crosshair\'s direction</string>
+    <string name="text_view.tutorial.healthbar">Here you will find your heath bar. Each time an enemy touches you, you will lose one health point</string>
+    <string name="text_view.tutorial.score">Your score will be shown here. You will get 1 point for each enemy you shoot</string>
+    <string name="text_view.tutorial.pausing">You can pause the game by pressing the back button on your phone</string>
+    <string name="text_view.tutorial.done">And that\'s it! We hope you have fun playing our game. You can always watch this tutorial again on the pause menu</string>
+
+    <string name="button.tutorial.next">Next</string>
+    <string name="button.tutorial.done">Got it!</string>
 </resources>

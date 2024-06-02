@@ -5,14 +5,14 @@ import android.graphics.Canvas;
 
 import androidx.core.content.ContextCompat;
 
-import com.example.survivalgame.gameengine.GameLoop;
 import com.example.survivalgame.R;
-import com.example.survivalgame.Utils;
+import com.example.survivalgame.gameengine.GameLoop;
 import com.example.survivalgame.gamepanel.Joystick;
 
 /**
  * A Player is the main character of the game, controllable by the user through a Joystick object.
- * The Player class is an extension of a Circle, which in turn inherits from the GameObject class.
+ * The Player class is an extension of a {@link Circle}, which in turn extends from the {@link
+ * GameObject} class.
  */
 public class Player extends Circle {
     public static final double SPEED_PIXELS_PER_SECOND = 400.0;
@@ -32,6 +32,10 @@ public class Player extends Circle {
         this.currentHealthPoints = MAX_HEALTH_POINTS;
     }
 
+    /**
+     * update() overrides the super method {@link GameObject#update()}. It updates the player's position
+     * based on the joystick direction.
+     */
     @Override
     public void update() {
         // Update velocity based on the actuator of the joystick
@@ -41,29 +45,28 @@ public class Player extends Circle {
         // Update position based on current velocity
         positionX += velocityX;
         positionY += velocityY;
-
-        // Update direction of player
-        if (velocityX != 0 || velocityY != 0) {
-            // Normalize velocity to get direction
-            double distance = Utils.getDistanceBetweenPoints(0, 0, velocityX, velocityY);
-
-            directionX = velocityX / distance;
-            directionY = velocityY / distance;
-        }
     }
 
+    /**
+     * drawNeon() calls the super method to handle the drawing of the player before drawing the
+     * healthbar on the screen.
+     *
+     * @param canvas the canvas on which the circles will be drawn.
+     */
     @Override
     public void drawNeon(Canvas canvas) {
         super.drawNeon(canvas);
 
-        healthBar.drawNeon(canvas, screenHeight, screenWidth);
+        if (currentHealthPoints > 0) {
+            healthBar.drawNeon(canvas, screenHeight, screenWidth);
+        }
     }
 
     public int getCurrentHealthPoints() {
         return currentHealthPoints;
     }
 
-    public void setHealthPoints(int newHealthPoints) {
+    public void setCurrentHealthPoints(int newHealthPoints) {
         if (this.currentHealthPoints >= 0) {
             this.currentHealthPoints = newHealthPoints;
         }

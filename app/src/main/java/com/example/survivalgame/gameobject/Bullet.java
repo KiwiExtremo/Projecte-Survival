@@ -8,6 +8,12 @@ import com.example.survivalgame.gameengine.GameLoop;
 import com.example.survivalgame.R;
 import com.example.survivalgame.Utils;
 
+/**
+ * A Bullet is an object that is fired by a player, and it will destroy (and be destroyed) an enemy
+ * when it collides with it.
+ * The Bullet class is an extension of a {@link Circle}, which in turn inherits from the
+ * {@link GameObject} class.
+ */
 public class Bullet extends Circle {
     private static final double BULLET_RADIUS = 20;
     public static final double SPEED_PIXELS_PER_SECOND = 800.0;
@@ -34,6 +40,10 @@ public class Bullet extends Circle {
         velocityY = directionY * MAX_SPEED;
     }
 
+    /**
+     * update() overrides the super method {@link Circle#update()}. It updates the bullet's position based on the
+     * bullet's velocity.
+     */
     @Override
     public void update() {
         positionX += velocityX;

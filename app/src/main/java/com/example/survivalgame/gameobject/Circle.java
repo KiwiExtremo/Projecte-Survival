@@ -3,13 +3,15 @@ package com.example.survivalgame.gameobject;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.survivalgame.R;
 
 /**
- * Circle is an abstract class that inherits from the GameObject class, and it
+ * Circle is an abstract class that inherits from the {@link GameObject} class, and it
  * implements a draw method to draw objects as neon circles. It has different draw methods,
  * since different objects will be drawn differently.
  */
@@ -25,14 +27,19 @@ public abstract class Circle extends GameObject {
         // Set color of the borders (outer and inner glow)
         outerPaint = new Paint();
         outerPaint.setColor(color);
+//        outerPaint.setStyle(Paint.Style.STROKE);
+//        outerPaint.setStrokeWidth(15);
 
         // Set color of the white middle glow
         whitePaint = new Paint();
         whitePaint.setColor(ContextCompat.getColor(context, R.color.white));
+//        whitePaint.setStyle(Paint.Style.STROKE);
+//        whitePaint.setStrokeWidth(5);
 
         // Set color of the black center
-        blackPaint = new Paint();
-        blackPaint.setColor(ContextCompat.getColor(context, R.color.black));
+        blackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        blackPaint.setColor(ContextCompat.getColor(context, R.color.transparent));
+        blackPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     }
 
     private double getRadius() {

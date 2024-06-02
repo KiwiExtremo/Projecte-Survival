@@ -10,4 +10,10 @@
     <color name="healthbar_border">#8C8C8C</color>
     <color name="healthbar_color">#4CC618</color>
     <color name="score">#35CFFF</color>
+    <color name="background_tutorial">#A6000000</color>
+    <color name="background_game_line_gradient">#00634D</color>
+    <color name="background_game_line_outer">#008164</color>
+    <color name="background_game_line_center">#00DDAB</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="tutorial_text_view">#D8D8D8</color>
 </resources>
