@@ -10,10 +10,6 @@ public abstract class GameObject {
     protected double velocityX = 0, velocityY = 0;
     protected double directionX = 0, directionY = 0;
 
-    public GameObject() {
-
-    }
-
     public GameObject(double positionX, double positionY) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -36,6 +32,8 @@ public abstract class GameObject {
     }
 
     public abstract void drawFilledNeon(Canvas canvas);
+
+    public abstract void drawNeon(Canvas canvas);
 
     public abstract void update();
 

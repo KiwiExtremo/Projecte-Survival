@@ -13,7 +13,8 @@ import com.example.survivalgame.gamepanel.Joystick;
 
 /**
  * A Crosshair is an object that is used to know where the bullets will be fired.
- * The Crosshair class is an extension of a Circle, which in turn inherits from the GameObject class.
+ * The Crosshair class is an extension of a {@link Circle}, which in turn inherits from the {@link
+ * GameObject} class.
  */
 public class Crosshair extends Circle {
     public static final int ORBIT_RADIUS = 250;
@@ -47,6 +48,10 @@ public class Crosshair extends Circle {
         return previousCrosshairPositionY;
     }
 
+    /**
+     * update() overrides the super class method update(). It updates the crosshair based on the
+     * joystick direction, and also updates the orbit position based on the player position.
+     */
     @Override
     public void update() {
         double threshold = 0.25;
@@ -80,6 +85,12 @@ public class Crosshair extends Circle {
         previousCrosshairPositionY = crosshairPositionY;
     }
 
+    /**
+     * drawFilledNeon() overrides the super class method {@link Circle#drawFilledNeon(Canvas)}, and draws the orbit
+     * around the player before calling the super method to handle the drawing of the crosshair.
+     *
+     * @param canvas the canvas on which the circles will be drawn.
+     */
     @Override
     public void drawFilledNeon(Canvas canvas) {
         // Draw the orbit first so it stays under the crosshair

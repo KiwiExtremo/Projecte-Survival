@@ -1,18 +1,19 @@
 package com.example.survivalgame.gameengine;
 
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class GameLoop extends Thread {
     public static final double MAX_UPS = 60.0;
     public static final double UPS_PERIOD = 1E+3 / MAX_UPS;
-    private boolean isRunning = false, gameFinished = false;
+    private boolean isRunning = false, gameFinished = false, firstFrame = true;
     private final SurfaceHolder surfaceHolder;
-    private final Game game;
+    private final GameView game;
     private double averageUPS;
     private double averageFPS;
 
-    public GameLoop(Game game, SurfaceHolder surfaceHolder) {
+    public GameLoop(GameView game, SurfaceHolder surfaceHolder) {
         this.game = game;
         this.surfaceHolder = surfaceHolder;
     }
@@ -34,21 +35,14 @@ public class GameLoop extends Thread {
     }
 
     public void startLoop() {
-        isRunning = true;
+        // We start the game with the isRunning on false, so as to let the tutorial be shown without
+        // the game starting.
 
         start();
     }
 
     public void stopLoop() {
         isRunning = false;
-
-        // wait for the thread to join
-        try {
-            join();
-
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
-        }
     }
 
     @Override
@@ -66,7 +60,7 @@ public class GameLoop extends Thread {
         Canvas canvas = null;
         startTime = System.currentTimeMillis();
         while (!gameFinished) {
-            while (isRunning) {
+            while (isRunning || firstFrame) {
                 // Try to update and render the game
                 try {
                     canvas = surfaceHolder.lockCanvas();
@@ -129,7 +123,12 @@ public class GameLoop extends Thread {
 
                     startTime = System.currentTimeMillis();
                 }
+
+                firstFrame = false;
             }
         }
+        Log.w("GameLoop", "Game finished");
+        // TODO start the game over dialog here instead of from GameActivity
+
     }
 }

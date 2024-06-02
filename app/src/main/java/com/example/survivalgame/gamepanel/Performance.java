@@ -49,19 +49,19 @@ public class Performance {
     public void drawUPS(Canvas canvas) {
         double avgUPS = gameLoop.getAverageUPS();
 
-        canvas.drawText(context.getString(R.string.canvas_text_ups, avgUPS), 100, 100, performancePaint);
-        canvas.drawText(context.getString(R.string.canvas_text_ups, avgUPS), 100, 100, whitePaint);
+        canvas.drawText(context.getString(R.string.canvas_text_ups, avgUPS), 600, 100, performancePaint);
+        canvas.drawText(context.getString(R.string.canvas_text_ups, avgUPS), 600, 100, whitePaint);
     }
 
     public void drawFPS(Canvas canvas) {
         double avgFPS = gameLoop.getAverageFPS();
 
-        canvas.drawText(context.getString(R.string.canvas_text_fps, avgFPS), 100, 200, performancePaint);
-        canvas.drawText(context.getString(R.string.canvas_text_fps, avgFPS), 100, 200, whitePaint);
+        canvas.drawText(context.getString(R.string.canvas_text_fps, avgFPS), 900, 100, performancePaint);
+        canvas.drawText(context.getString(R.string.canvas_text_fps, avgFPS), 900, 100, whitePaint);
     }
 
     public void drawScore(Canvas canvas, int currentScore) {
-        canvas.drawText(context.getString(R.string.canvas_text_score, currentScore), 500, 100, scorePaint);
-        canvas.drawText(context.getString(R.string.canvas_text_score, currentScore), 500, 100, whitePaint);
+        canvas.drawText(context.getString(R.string.canvas_text_score, currentScore), 100, 100, scorePaint);
+        canvas.drawText(context.getString(R.string.canvas_text_score, currentScore), 100, 100, whitePaint);
     }
 }

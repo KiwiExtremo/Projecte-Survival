@@ -3,18 +3,23 @@ package com.example.survivalgame.gameengine;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Shader;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
+import com.example.survivalgame.R;
 import com.example.survivalgame.gameobject.Bullet;
 import com.example.survivalgame.gameobject.Circle;
 import com.example.survivalgame.gameobject.Crosshair;
 import com.example.survivalgame.gameobject.Enemy;
 import com.example.survivalgame.gameobject.Player;
-import com.example.survivalgame.gamepanel.GameOver;
 import com.example.survivalgame.gamepanel.Joystick;
 import com.example.survivalgame.gamepanel.Performance;
 
@@ -26,7 +31,7 @@ import java.util.List;
  * The Game class will manage all objects in the game, and will be responsible
  * for updating all states and rendering all objects to the screen.
  */
-public class Game extends SurfaceView implements SurfaceHolder.Callback {
+public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private final Joystick playerJoystick;
     private final Joystick aimJoystick;
     private final Player player;
@@ -36,17 +41,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private GameLoop gameLoop;
     private int playerJoystickPointerId = -1;
     private int aimJoystickPointerId = -1;
-
     public int screenHeight, screenWidth, currentScore = 0;
     private boolean bulletReady = false;
     private boolean showPlayerJoystick = false;
     private boolean showAimJoystick = false;
-    private GameOver gameOver;
     private Performance performance;
+    private Paint bgCenterPaint, bgOuterPaint, bgOutermostPaint;
 
-
-    public Game(Context context) {
-        super(context);
+    public GameView(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
 
         // Get screen sizes on runtime
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -60,7 +63,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         gameLoop = new GameLoop(this, surfaceHolder);
 
     // Initialize the game panels
-        gameOver = new GameOver(context, screenWidth, screenHeight);
         performance = new Performance(context, gameLoop);
 
         // Create the joysticks (they're set on approximate positions by default, but will move dynamically when used)
@@ -73,6 +75,17 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Create a new crosshair
         crosshair = new Crosshair(context, player, aimJoystick, (float) screenWidth / 2, (float) screenHeight / 2);
+
+        // Create the paints to draw the background with
+        bgCenterPaint = new Paint();
+        bgCenterPaint.setColor(ContextCompat.getColor(context, R.color.background_game_line_center));
+
+        bgOuterPaint = new Paint();
+        bgOuterPaint.setColor(ContextCompat.getColor(context, R.color.background_game_line_outer));
+
+        bgOutermostPaint = new Paint();
+        Shader shader = new LinearGradient(0, 0, 0, screenHeight, ContextCompat.getColor(context, R.color.background_game_line_gradient), ContextCompat.getColor(context, R.color.black), Shader.TileMode.CLAMP);
+        bgOutermostPaint.setShader(shader);
 
         setFocusable(true);
     }
@@ -180,17 +193,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        performance.draw(canvas, currentScore);
+        drawBackground(canvas);
 
         crosshair.drawFilledNeon(canvas);
         player.drawNeon(canvas);
-
-        if (showPlayerJoystick) {
-            playerJoystick.draw(canvas);
-        }
-        if (showAimJoystick) {
-            aimJoystick.draw(canvas);
-        }
 
         for (Enemy enemy : enemyList) {
             enemy.drawNeon(canvas);
@@ -200,9 +206,40 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             bullet.drawFilledNeon(canvas);
         }
 
-        // When a player loses all their healthpoints, draw the Game Over
-        if (player.getCurrentHealthPoints() <= 0) {
-            gameOver.draw(canvas);
+
+
+        // Draw performance and joysticks while the player is alive
+        if (player.getCurrentHealthPoints() > 0) {
+            if (showPlayerJoystick) {
+                playerJoystick.draw(canvas);
+            }
+            if (showAimJoystick) {
+                aimJoystick.draw(canvas);
+            }
+
+            performance.draw(canvas, currentScore);
+
+        } else {
+            // Finish the game when the player loses all healthpoints
+            gameLoop.setGameFinished(true);
+        }
+    }
+
+    private void drawBackground(Canvas canvas) {
+        int spacing = 100;
+
+        // Draw horizontal lines
+        for (int j = 50; j < screenHeight; j += spacing) {
+            canvas.drawRect(0, j - 9, screenWidth, j + 18, bgOutermostPaint);
+            canvas.drawRect(0, j, screenWidth, j + 9, bgOuterPaint);
+            canvas.drawRect(0, j + 3, screenWidth, j + 6, bgCenterPaint);
+        }
+
+        // Draw vertical lines
+        for (int i = 50; i < screenWidth; i += spacing) {
+            canvas.drawRect(i - 9, 0, i + 18, screenHeight, bgOutermostPaint);
+            canvas.drawRect(i, 0, i + 9, screenHeight, bgOuterPaint);
+            canvas.drawRect(i + 3, 0, i + 6, screenHeight, bgCenterPaint);
         }
     }
 
@@ -250,7 +287,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 enemyIterator.remove();
 
                 // Reduce the player's health points
-                player.setHealthPoints(player.getCurrentHealthPoints() - 1);
+                player.setCurrentHealthPoints(player.getCurrentHealthPoints() - 1);
 
                 // Skip bullets collision detection with current enemy since it collided with the player
                 continue;
