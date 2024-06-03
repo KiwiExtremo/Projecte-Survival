@@ -41,6 +41,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 // Wi-Fi P2P is enabled
             } else {
                 // Wi-Fi P2P is not enabled
+                Toast.makeText(context, "Wi-Fi P2P is not enabled", Toast.LENGTH_SHORT).show();
             }
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
             if (mManager != null) {
@@ -82,6 +83,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 });
             } else {
                 // Disconnected from peer
+                Toast.makeText(context, "Disconnected from peer", Toast.LENGTH_SHORT).show();
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Respond to this device's wifi state changing

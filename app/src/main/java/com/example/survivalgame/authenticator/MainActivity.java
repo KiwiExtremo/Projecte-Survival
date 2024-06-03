@@ -7,12 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
+
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,9 +28,16 @@ import androidx.core.content.ContextCompat;
 import com.example.survivalgame.GameActivity;
 import com.example.survivalgame.R;
 import com.example.survivalgame.multiplayer.WiFiDirectBroadcastReceiver;
+import com.example.survivalgame.multiplayer.WiFiDirectCommunication;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+import android.os.Handler;
+
+
+@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_CODE = 1;
     private static final String[] REQUIRED_PERMISSIONS = {
@@ -40,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
     };
     public static final int MODE_SINGLEPLAYER = 0;
     public static final int MODE_MULTIPLAYER = 1;
+    private Handler mHandler = new Handler();
+    private Runnable mBroadcastRunnable;
+    private static final int BROADCAST_INTERVAL = 1000; // 1s
+    private static final int BROADCAST_DURATION = 5000; // 5s
+
+    private boolean isSearchingForRoom = false;
+
     private FirebaseAuth firebaseAuth;
     private Button bLogOut, bStartSinglePlayer, bStartMultiplayer, bLeaderboards;
     private TextView tvUsername, tvTeammate;
@@ -51,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver mReceiver;
     private IntentFilter mIntentFilter;
 
+    private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (allPermissionsGranted()) {
             initializeWiFiP2P();
-
+            startRoomSearch();
         } else {
             requestPermissions();
         }
@@ -84,14 +101,42 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         FirebaseAuth.getInstance().signOut();
+    }
 
+    private void startRoomSearch() {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isSearchingForRoom) {
+                    stopRoomSearch();
+                    // Aquí puedes iniciar como el host
+                    startHosting();
+                } else {
+                    // Envía el broadcast de búsqueda de sala
+                    sendRoomBroadcast();
+                    // Continúa la búsqueda hasta que se alcance la duración total
+                    mHandler.postDelayed(this, BROADCAST_INTERVAL);
+                }
+            }
+        }, BROADCAST_DURATION);
+        isSearchingForRoom = true;
+    }
+
+    private void stopRoomSearch() {
+        mHandler.removeCallbacksAndMessages(null);
+        isSearchingForRoom = false;
+    }
+
+    private void sendRoomBroadcast() {
+        // Aquí puedes enviar el broadcast de búsqueda de sala
+        // Por ejemplo:
+        // mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() { ... });
     }
 
     private void requestPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // API 33
             ActivityCompat.requestPermissions(this,
                     concatArrays(REQUIRED_PERMISSIONS, REQUIRED_PERMISSIONS_API_33), PERMISSIONS_REQUEST_CODE);
-
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE);
         }
@@ -155,11 +200,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startHosting() {
-        // Code to start hosting a room
+        new WiFiDirectCommunication.ServerAsyncTask(new WiFiDirectCommunication.OnDataReceivedListener() {
+            @Override
+            public void onDataReceived(String data) {
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Received: " + data, Toast.LENGTH_LONG).show());
+            }
+        }).execute();
     }
 
+    @SuppressLint("MissingPermission")
     public void handleConnectionInfo(WifiP2pInfo info) {
-        // Handle connection information and start communication with the other device
+        if (info.groupFormed && info.isGroupOwner) {
+            // Start server task
+            new WiFiDirectCommunication.ServerAsyncTask(new WiFiDirectCommunication.OnDataReceivedListener() {
+                @Override
+                public void onDataReceived(String data) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Received: " + data, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }).execute();
+        } else if (info.groupFormed) {
+            // Start client task
+            new WiFiDirectCommunication.ClientAsyncTask(info.groupOwnerAddress.getHostAddress()).execute("Hello from client!");
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -168,11 +235,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 // Peer discovery started
+                Toast.makeText(MainActivity.this, "Peer discovery started", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int reasonCode) {
                 // Peer discovery failed
+                // Peer discovery failed
+                String reasonMsg;
+                switch (reasonCode) {
+                    case WifiP2pManager.P2P_UNSUPPORTED:
+                        reasonMsg = "P2P is unsupported on this device.";
+                        break;
+                    case WifiP2pManager.ERROR:
+                        reasonMsg = "Internal error occurred.";
+                        break;
+                    case WifiP2pManager.BUSY:
+                        reasonMsg = "Framework is busy and unable to service this request.";
+                        break;
+                    default:
+                        reasonMsg = "Peer discovery failed with reason code: " + reasonCode;
+                        break;
+                }
+                Toast.makeText(MainActivity.this, reasonMsg, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -234,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
     private void initialize() {
         firebaseAuth = FirebaseAuth.getInstance();
 
-        bLogOut = findViewById(R.id.bLogOutAccount);
+        bLogOut = findViewById(R.id.bLogOut);
         bStartSinglePlayer = findViewById(R.id.bSinglePlayer);
         bStartMultiplayer = findViewById(R.id.bMultiPlayer);
         bLeaderboards = findViewById(R.id.bLeaderboards);
@@ -246,7 +331,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
             startActivity(intent);
             finish();
-
         } else {
             // TODO get username from database
             String username = "Thresholder";
