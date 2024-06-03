@@ -115,10 +115,10 @@ public class ResetPasswordActivity extends AppCompatActivity {
     }
 
     /**
-     * startLoginActivity() starts the {@link LoginActivity} and finishes the current Activity.
+     * startLoginActivity() starts the {@link LogInActivity} and finishes the current Activity.
      */
     private void startLoginActivity() {
-        Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+        Intent i = new Intent(getApplicationContext(), LogInActivity.class);
         startActivity(i);
         finish();
     }

@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".authenticator.LogInActivity">
-
+    tools:context=".authenticator.MainActivity" >
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -46,76 +45,62 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/text_view.title.sign_in"
+                android:text="@string/text_view.title.lobby"
                 android:textSize="34sp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="12dp"
-                app:boxBackgroundColor="@android:color/transparent">
+                android:layout_marginHorizontal="64dp"
+                android:background="@color/tutorial_text_view"
+                android:padding="10dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etUsername"
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:layout_marginBottom="12dp"
-                    android:textSize="20sp"
-                    android:hint="@string/edit_text.hint.user_email" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="match_parent"
+                    android:paddingBottom="5dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/etPasswordLayout"
+                    <TextView
+                        android:id="@+id/tvUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="#Username"
+                        android:textSize="20sp" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingTop="5dp">
+
+                    <TextView
+                        android:id="@+id/tvTeammate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_view.waiting"
+                        android:textSize="16sp" />
+                </TableRow>
+
+            </TableLayout>
+
+            <Button
+                android:id="@+id/bMultiPlayer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="12dp"
-                app:boxBackgroundColor="@android:color/transparent"
-                app:passwordToggleEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:hint="@string/edit_text.hint.password"
-                    android:inputType="text|textPassword"
-                    android:textSize="20sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <ProgressBar
-                android:id="@+id/progressBarLogin"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginVertical="-12dp"
-                android:visibility="gone" />
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="12dp"
+                android:onClick="bOnClickStartLoginActivity"
+                android:text="@string/button.start.multiplayer" />
+
             <Button
                 android:id="@+id/bLeaderboards"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="24dp"
                 android:onClick="bOnClickStartLoginActivity"
-                android:text="@string/button.login" />
-
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/bGoogleLogin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp" />
-
-            <TextView
-                android:id="@+id/tvForgotPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:paddingVertical="5dp"
-                android:text="@string/button.forgot_password"
-                android:textAlignment="textEnd"
-                android:layout_gravity="end"
-                android:onClick="bOnClickResetPasswordActivity" />
+                android:text="@string/button.leaderboards" />
 
             <TextView
                 android:id="@+id/tvRegister"
@@ -123,7 +108,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="@string/text_view.title.not_user"
+                android:text="@string/text_view.title.singleplayer"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
@@ -133,7 +118,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
                 android:onClick="bOnClickStartRegisterActivity"
-                android:text="@string/button.register" />
+                android:text="@string/button.start.singleplayer" />
+
+            <Button
+                android:id="@+id/bLogOut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/button.log_out" />
 
         </LinearLayout>
     </ScrollView>

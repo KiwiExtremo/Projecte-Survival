@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Survival Game</string>
 
-    <!-- Login strings -->
+    <!-- Authentication strings -->
     <string name="text_view.title.sign_in">Sign in</string>
     <string name="text_view.title.register">Register</string>
     <string name="text_view.title.not_user">Not a user yet?</string>
@@ -32,6 +32,18 @@
     <string name="dialog.recovery_email.positive">I understand!</string>
 
     <string name="google.sign_in.default_web_client">979601923902-mq8e7ph86es0tkafb2nqaksc3e7s4sif.apps.googleusercontent.com</string>
+
+    <!-- Lobby strings -->
+    <string name="text_view.title.lobby">Lobby</string>
+    <string name="text_view.title.singleplayer">Want to play alone?</string>
+    <string name="text_view.waiting">Looking for a teammate...</string>
+
+    <string name="button.leaderboards">Leaderboards</string>
+    <string name="button.log_out">Log out</string>
+    <string name="button.start.singleplayer">Play alone</string>
+    <string name="button.start.multiplayer">Play together</string>
+
+    <string name="toast.error.no_permissions">Permissions are required to play multiplayer</string>
 
     <!-- Game strings -->
     <string name="game.game_over.text">Game Over!</string>

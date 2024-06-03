@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"/>
+
+    <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,40 +20,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SurvivalGame"
         tools:targetApi="31">
-        <activity
-            android:name=".BasicHomeActivity"
-            android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        </activity>
-        <activity android:name=".authenticator.LoginActivity"
+        <activity
+            android:name=".authenticator.LogInActivity"
             android:exported="false" />
-        <activity android:name=".authenticator.RegisterActivity"
         <activity
-            android:name=".authenticator.MainActivity"
-            android:exported="false">
-
-        </activity>
-        <activity
-            android:name=".authenticator.LoginActivity"
+            android:name=".authenticator.SignInActivity"
             android:exported="false" />
         <activity
             android:name=".authenticator.ResetPasswordActivity"
             android:exported="false" />
+
         <activity
-            android:name=".authenticator.RegisterActivity"
-            android:exported="false" />
+            android:name=".authenticator.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".GameActivity"
             android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
     </application>
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
-
 </manifest>

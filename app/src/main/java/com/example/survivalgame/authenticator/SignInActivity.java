@@ -1,8 +1,5 @@
 package com.example.survivalgame.authenticator;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -14,17 +11,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.survivalgame.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-public class RegisterActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword, etPasswordConfirm;
     private TextInputLayout etPasswordLayout, etPasswordConfirmLayout;
@@ -48,7 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_signin);
 
         fetchFromLayout();
 
@@ -62,7 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void bOnClickStartLoginActivity() {
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
         startActivity(intent);
         finish();
     }
@@ -123,27 +117,44 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        if (!password.equals(passwordConfirm)) {
+            etPasswordConfirmLayout.setError(getString(R.string.edit_text_error_confirm_password));
+            etPasswordConfirm.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    etPasswordConfirmLayout.setError(null);
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+
+            progressBar.setVisibility(View.GONE);
+            return;
+        }
+
         createUserWithMAuth(email, password);
     }
 
-            if (!password.equals(confirmPassword)) {
-                Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_LONG).show();
-                progressBar.setVisibility(View.INVISIBLE);
-                return;
-            }
+
     private void createUserWithMAuth(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             progressBar.setVisibility(View.GONE);
             if (task.isSuccessful()) {
 
-                Toast.makeText(RegisterActivity.this, "Acount Created.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignInActivity.this, "Acount Created.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
 
             } else {
                 // If registering fails, display a message to the user.
-                Toast.makeText(RegisterActivity.this, "Failed to register.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignInActivity.this, "Failed to register.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -155,7 +166,7 @@ public class RegisterActivity extends AppCompatActivity {
         etPasswordLayout = findViewById(R.id.etPasswordLayout);
         etPasswordConfirm = findViewById(R.id.etPasswordConfirm);
         etPasswordConfirmLayout = findViewById(R.id.etPasswordConfirmLayout);
-        bRegister = findViewById(R.id.bRegister);
+        bRegister = findViewById(R.id.bSinglePlayer);
         progressBar = findViewById(R.id.progresBar);
         goToLogin = findViewById(R.id.tvAlreadyRegistered);
     }

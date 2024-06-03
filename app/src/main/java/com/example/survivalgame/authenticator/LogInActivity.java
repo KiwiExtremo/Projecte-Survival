@@ -32,7 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class LoginActivity extends AppCompatActivity {
+public class LogInActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 1;
     private EditText etUserMail, etPassword;
     private TextInputLayout etPasswordLayout;
@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void bOnClickStartRegisterActivity(View view) {
-        Intent i = new Intent(this, RegisterActivity.class);
+        Intent i = new Intent(this, SignInActivity.class);
         startActivity(i);
     }
 
