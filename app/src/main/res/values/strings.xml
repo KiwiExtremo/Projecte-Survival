@@ -76,4 +76,5 @@
 
     <string name="button.tutorial.next">Next</string>
     <string name="button.tutorial.done">Got it!</string>
+    <string name="edit_text_error_invalid_email">Invalid Format</string>
 </resources>

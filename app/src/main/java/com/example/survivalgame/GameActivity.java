@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.Guideline;
 
 import com.example.survivalgame.gameengine.GameView;
 import com.example.survivalgame.gamepanel.TutorialView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class GameActivity extends AppCompatActivity {
     private GameView gameView;
@@ -80,6 +81,7 @@ public class GameActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
         }
+
     }
 
     private void startBGMusic() {

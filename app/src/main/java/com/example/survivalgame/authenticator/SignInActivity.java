@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -71,6 +72,12 @@ public class SignInActivity extends AppCompatActivity {
 
         if ("".equals(email)) {
             etUsername.setError(getString(R.string.edit_text_error_user_email));
+            progressBar.setVisibility(View.GONE);
+            return;
+        }
+
+        if (!isValidEmail(email)) {
+            etUsername.setError(getString(R.string.edit_text_error_invalid_email));
             progressBar.setVisibility(View.GONE);
             return;
         }
@@ -157,6 +164,10 @@ public class SignInActivity extends AppCompatActivity {
                 Toast.makeText(SignInActivity.this, "Failed to register.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private boolean isValidEmail(CharSequence email) {
+        return email != null && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private void fetchFromLayout() {
