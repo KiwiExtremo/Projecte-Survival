@@ -27,14 +27,14 @@ public class Crosshair extends Circle {
     Paint orbitPaint;
 
     public Crosshair(Context context, Player player, Joystick joystick, double positionX, double positionY) {
-        super(context, ContextCompat.getColor(context, R.color.crosshair), positionX, positionY, CROSSHAIR_RADIUS);
+        super(context, ContextCompat.getColor(context, R.color.crosshair_color), positionX, positionY, CROSSHAIR_RADIUS);
 
         this.context = context;
         this.player = player;
         this.joystick = joystick;
 
         orbitPaint = new Paint();
-        orbitPaint.setColor(ContextCompat.getColor(context, R.color.crosshair));
+        orbitPaint.setColor(ContextCompat.getColor(context, R.color.crosshair_color));
         orbitPaint.setStrokeWidth(2);
         orbitPaint.setStyle(Paint.Style.STROKE);
         orbitPaint.setPathEffect(new DashPathEffect(new float[]{(float) (10 * Math.PI), (float) (10 * Math.PI)}, (float)1.0));

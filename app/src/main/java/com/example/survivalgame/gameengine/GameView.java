@@ -1,6 +1,7 @@
 package com.example.survivalgame.gameengine;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
@@ -13,6 +14,7 @@ import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.example.survivalgame.R;
 import com.example.survivalgame.gameobject.Bullet;
@@ -36,6 +38,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private final Joystick aimJoystick;
     private final Player player;
     private final Crosshair crosshair;
+    private final SharedPreferences pref;
     private List<Enemy> enemyList = new ArrayList<>();
     private List<Bullet> bulletList = new ArrayList<>();
     private GameLoop gameLoop;
@@ -47,9 +50,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean showAimJoystick = false;
     private Performance performance;
     private Paint bgCenterPaint, bgOuterPaint, bgOutermostPaint;
+    private boolean isSinglePlayer, isHost;
+    private boolean showFrameData;
 
     public GameView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
+        // Get sharedPreferences
+        pref = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Get screen sizes on runtime
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -64,6 +71,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     // Initialize the game panels
         performance = new Performance(context, gameLoop);
+        showFrameData = pref.getBoolean("check_performance", true);
+
 
         // Create the joysticks (they're set on approximate positions by default, but will move dynamically when used)
         playerJoystick = new Joystick((int) screenWidth / 4, (int) screenHeight / 2, 100, 60);
@@ -84,7 +93,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         bgOuterPaint.setColor(ContextCompat.getColor(context, R.color.background_game_line_outer));
 
         bgOutermostPaint = new Paint();
-        Shader shader = new LinearGradient(0, 0, 0, screenHeight, ContextCompat.getColor(context, R.color.background_game_line_gradient), ContextCompat.getColor(context, R.color.black), Shader.TileMode.CLAMP);
+        Shader shader = new LinearGradient(0, screenHeight, 0, 0, ContextCompat.getColor(context, R.color.background_game_line_gradient), ContextCompat.getColor(context, R.color.black), Shader.TileMode.CLAMP);
         bgOutermostPaint.setShader(shader);
 
         setFocusable(true);
@@ -217,7 +226,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 aimJoystick.draw(canvas);
             }
 
-            performance.draw(canvas, currentScore);
+            performance.draw(canvas, currentScore, showFrameData);
 
         } else {
             // Finish the game when the player loses all healthpoints
@@ -256,14 +265,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         player.update();
         crosshair.update();
 
-        // Enemies are created dynamically here
-        if (Enemy.readyToSpawn()) {
+        // Enemies are created dynamically here (only the host)
+        if (Enemy.readyToSpawn() && (isSinglePlayer || isHost)) {
             enemyList.add(new Enemy(getContext(), screenHeight, screenWidth, player));
         }
 
         // Update state of each enemy
         for (Enemy enemy : enemyList) {
             enemy.update();
+
+            if (isHost) {
+                //multiplayerP2P.prepare(enemy);
+            }
         }
 
         // Create bullet if ready
@@ -275,6 +288,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         // Update state of each bullet
         for (Bullet bullet : bulletList) {
             bullet.update();
+
+            if (!isSinglePlayer) {
+                //multiplayerP2P.prepare(bullet);
+            }
         }
 
         // Remove the current enemy if it is colliding with the player or a bullet
@@ -308,9 +325,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
+
+        if (!isSinglePlayer) {
+            // enemies and bullets have been prepared already
+            // multiplayerP2P.prepare(player);
+            // multiplayerP2P.send();
+
+            // ally.update(multiplayerP2P.getData());
+            // allyBulletList.add(multiplayerP2P.getBullets());
+            if (!isHost) {
+                // enemyList = multiplayerP2P.getEnemies();
+                // update each enemy based on the position gotten
+            }
+        }
     }
 
     public void pause() {
         gameLoop.stopLoop();
+    }
+
+    public void setGameMode(boolean isSinglePlayer) {
+        this.isSinglePlayer = isSinglePlayer;
     }
 }

@@ -30,7 +30,7 @@ public class Performance {
         scorePaint = new Paint();
         scorePaint.setTypeface(tf);
         scorePaint.setStyle(Paint.Style.STROKE);
-        scorePaint.setColor(ContextCompat.getColor(context, R.color.score));
+        scorePaint.setColor(ContextCompat.getColor(context, R.color.score_color));
         scorePaint.setTextSize(50);
         scorePaint.setStrokeWidth(5);
 
@@ -40,9 +40,11 @@ public class Performance {
         whitePaint.setTextSize(50);
     }
 
-    public void draw(Canvas canvas, int currentScore) {
-        drawUPS(canvas);
-        drawFPS(canvas);
+    public void draw(Canvas canvas, int currentScore, boolean frameData) {
+        if (frameData) {
+            drawUPS(canvas);
+            drawFPS(canvas);
+        }
         drawScore(canvas, currentScore);
     }
 

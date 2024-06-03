@@ -46,5 +46,8 @@
             android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+
+        <activity
+            android:name=".PreferencesActivity" />
     </application>
 </manifest>

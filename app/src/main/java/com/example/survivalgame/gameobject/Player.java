@@ -23,7 +23,7 @@ public class Player extends Circle {
     private int currentHealthPoints, screenHeight, screenWidth;
 
     public Player(Context context, Joystick joystick, double positionX, double positionY, int screenHeight, int screenWidth, double radius) {
-        super(context, ContextCompat.getColor(context, R.color.player), positionX, positionY, radius);
+        super(context, ContextCompat.getColor(context, R.color.player_yellow), positionX, positionY, radius);
 
         this.joystick = joystick;
         this.healthBar = new HealthBar(context, this);

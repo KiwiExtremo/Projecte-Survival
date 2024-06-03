@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/preference.category.menu"
+        app:iconSpaceReserved="false">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="check_lobby_music"
+            android:summary="@string/preference.checkbox.lobby_background_music.desc"
+            android:title="@string/preference.checkbox.lobby_background_music.title"
+            app:icon="@drawable/music_average"
+            app:iconSpaceReserved="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/preference.category.game"
+        app:iconSpaceReserved="false">
+
+        <CheckBoxPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="true"
+            android:key="show_tutorial"
+            android:summary="@string/preference.checkbox.show_tutorial.desc"
+            android:title="@string/preference.checkbox.show_tutorial.title"
+            app:icon="@drawable/music_average"
+            app:iconSpaceReserved="true" />
+        <CheckBoxPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="true"
+            android:key="check_performance"
+            android:summary="@string/preference.checkbox.show_performance.desc"
+            android:title="@string/preference.checkbox.show_performance.title"
+            app:icon="@drawable/music_average"
+            app:iconSpaceReserved="true" />
+        <CheckBoxPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="true"
+            android:key="check_game_music"
+            android:summary="@string/preference.checkbox.game_background_music.desc"
+            android:title="@string/preference.checkbox.game_background_music.title"
+            app:icon="@drawable/music_average"
+            app:iconSpaceReserved="true" />
+        <ListPreference
+            android:defaultValue="player_yellow"
+            android:entries="@array/playerColor"
+            android:entryValues="@array/playerColorID"
+            android:key="player_color"
+            android:summary="@string/preference.dialog.player_color.summary"
+            android:title="@string/preference.dialog.player_color.title"
+            app:negativeButtonText="@string/preference.dialog.player_color.negative" />
+        <ListPreference
+            android:defaultValue="enemy_red"
+            android:entries="@array/enemyColor"
+            android:entryValues="@array/enemyColorID"
+            android:key="enemy_color"
+            android:summary="@string/preference.dialog.enemy_color.summary"
+            android:title="@string/preference.dialog.enemy_color.title"
+            app:negativeButtonText="@string/preference.dialog.enemy_color.negative" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -3,6 +3,7 @@
     <style name="Base.Theme.SurvivalGame" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorAccent">?attr/colorPrimaryDark</item>
     </style>
 
     <style name="Theme.SurvivalGame" parent="Base.Theme.SurvivalGame" />

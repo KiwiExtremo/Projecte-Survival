@@ -45,6 +45,43 @@
 
     <string name="toast.error.no_permissions">Permissions are required to play multiplayer</string>
 
+    <!-- Settings and shared prefs strings -->
+    <string name="action.settings">Settings</string>
+    <string name="action.information">Information</string>
+
+    <string name="dialog.information.title">About this app</string>
+    <string name="dialog.information.body">This app was created by Ariel Gómez, Sergi Luque and Albert Samuel Arroyo, as the end-of-the-year project.</string>
+    <string name="dialog.information.positive">Understood</string>
+
+    <string name="preference.category.menu">Menu settings</string>
+    <string name="preference.category.game">Game settings</string>
+
+    <string name="preference.list.player_color.yellow">Yellow</string>
+    <string name="preference.list.player_color.blue">Blue</string>
+    <string name="preference.list.player_color.green">Green</string>
+
+    <string name="preference.list.enemy_color.red">Red</string>
+    <string name="preference.list.enemy_color.purple">Purple</string>
+    <string name="preference.list.enemy_color.orange">Orange</string>
+
+    <string name="preference.dialog.player_color.title">Player color</string>
+    <string name="preference.dialog.player_color.summary">Choose the color you want for the player</string>
+    <string name="preference.dialog.player_color.negative">Cancel</string>
+    <string name="preference.dialog.enemy_color.title">Enemy color</string>
+    <string name="preference.dialog.enemy_color.summary">Choose the color you want for the enemy</string>
+    <string name="preference.dialog.enemy_color.negative">Cancel</string>
+
+    <string name="preference.checkbox.lobby_background_music.title">Background music</string>
+    <string name="preference.checkbox.lobby_background_music.desc">Choose if you want to listen to music on the lobby</string>
+    <string name="preference.checkbox.game_background_music.title">Background music</string>
+    <string name="preference.checkbox.game_background_music.desc">Choose if you want to listen to music in-game</string>
+    <string name="preference.checkbox.show_performance.title">Show performance</string>
+    <string name="preference.checkbox.show_performance.desc">Choose if you want to see UPs and FPS in-game</string>
+    <string name="preference.checkbox.show_tutorial.title">Show tutorial</string>
+    <string name="preference.checkbox.show_tutorial.desc">Choose to show the tutorial next time you start a game</string>
+
+    <string name="toast.chosen_color">you have chosen the %s color</string>
+
     <!-- Game strings -->
     <string name="game.game_over.text">Game Over!</string>
 

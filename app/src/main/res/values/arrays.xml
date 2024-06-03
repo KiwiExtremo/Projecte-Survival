@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="playerColor">
+        <item>@string/preference.list.player_color.yellow</item>
+        <item>@string/preference.list.player_color.blue</item>
+        <item>@string/preference.list.player_color.green</item>
+    </string-array>
+    <string-array name="playerColorID">
+        <item>player_yellow</item>
+        <item>player_blue</item>
+        <item>player_green</item>
+    </string-array>
+
+    <string-array name="enemyColor">
+        <item>@string/preference.list.enemy_color.red</item>
+        <item>@string/preference.list.enemy_color.purple</item>
+        <item>@string/preference.list.enemy_color.orange</item>
+    </string-array>
+    <string-array name="enemyColorID">
+        <item>enemy_red</item>
+        <item>enemy_purple</item>
+        <item>enemy_orange</item>
+    </string-array>
+</resources>

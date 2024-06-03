@@ -22,7 +22,7 @@ public class Bullet extends Circle {
     public Bullet(Context context, Player marksman, Crosshair crosshair) {
         super(
                 context,
-                ContextCompat.getColor(context, R.color.player),
+                ContextCompat.getColor(context, R.color.player_yellow),
                 marksman.getPositionX(),
                 marksman.getPositionY(),
                 BULLET_RADIUS

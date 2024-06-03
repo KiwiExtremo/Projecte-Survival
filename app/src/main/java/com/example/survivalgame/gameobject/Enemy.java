@@ -36,7 +36,7 @@ public class Enemy extends Circle {
     public Enemy(Context context, int screenHeight, int screenWidth, Player player) {
         super(
                 context,
-                ContextCompat.getColor(context, R.color.enemy),
+                ContextCompat.getColor(context, R.color.enemy_red),
                 1000,
                 1000,
                 ENEMY_RADIUS

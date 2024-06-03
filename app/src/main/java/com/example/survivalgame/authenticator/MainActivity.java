@@ -6,13 +6,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,10 +24,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.example.survivalgame.GameActivity;
+import com.example.survivalgame.PreferencesActivity;
 import com.example.survivalgame.R;
 import com.example.survivalgame.multiplayer.WiFiDirectBroadcastReceiver;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,12 +51,13 @@ public class MainActivity extends AppCompatActivity {
     private Button bLogOut, bStartSinglePlayer, bStartMultiplayer, bLeaderboards;
     private TextView tvUsername, tvTeammate;
     private FirebaseUser user;
-
-    // P2P fields
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
     private BroadcastReceiver mReceiver;
     private IntentFilter mIntentFilter;
+    private boolean isMusic;
+    private MediaPlayer mp;
+    private SharedPreferences pref;
 
 
     @Override
@@ -58,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lobby);
 
         initialize();
+        getFromSharedPrefs();
+        updateBackgroundMusic();
         setOnClickListeners();
 
         if (allPermissionsGranted()) {
@@ -71,13 +81,57 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        initializeWiFiP2P();
         registerReceiver(mReceiver, mIntentFilter);
+
+        updateBackgroundMusic();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mReceiver);
+
+        if (mp != null && mp.isPlaying()) {
+            mp.pause();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mp != null && mp.isPlaying()) {
+            mp.pause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // unregisterReceiver(mReceiver);
+        FirebaseAuth.getInstance().signOut();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.iSettings) {
+            Intent i = new Intent(this, PreferencesActivity.class);
+            startActivity(i);
+        }
+        if (item.getItemId() == R.id.iInfo) {
+            showDialogInfo();
+            return true;
+        }
+        // If we got here, the user's action was not recognized.
+        // Invoke the superclass to handle it.
+        return super.onOptionsItemSelected(item);
     }
 
     private void requestPermissions() {
@@ -124,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 initializeWiFiP2P();
             } else {
                 Toast.makeText(this, getString(R.string.toast_error_no_permissions), Toast.LENGTH_LONG).show();
-                finish();
+                tvTeammate.setText("You can only play singleplayer");
             }
         }
     }
@@ -193,12 +247,29 @@ public class MainActivity extends AppCompatActivity {
     private void bOnClickStartMultiPlayer() {
         Intent intent = new Intent(getApplicationContext(), GameActivity.class);
         intent.putExtra("Mode", MODE_MULTIPLAYER);
+        // TODO put extra boolean isHost
         startActivity(intent);
     }
 
     private void bOnClickShowLeaderboards() {
         // TODO fetch data from database and show it
         showDialogLeaderboards();
+    }
+
+    private void showDialogInfo() {
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.dialog_information_title));
+        builder.setMessage(getString(R.string.dialog_information_body));
+
+        // add the buttons
+        builder.setPositiveButton(getString(R.string.dialog_information_positive), (dialog, which) -> {
+            // Do nothing, just close dialog box
+        });
+
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void showDialogNewUser() {
@@ -224,10 +295,31 @@ public class MainActivity extends AppCompatActivity {
         // TODO show leaderboards
     }
 
+    private void updateBackgroundMusic() {
+        isMusic = pref.getBoolean("check_lobby_music", true);
+
+        if (isMusic) {
+            mp.setLooping(true);
+            mp.start();
+
+        } else if (mp != null && mp.isPlaying()) {
+            mp.pause();
+        }
+    }
+
+    private void getFromSharedPrefs() {
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        mp = MediaPlayer.create(MainActivity.this, R.raw.lobby_bg_music);
+    }
+
     private void initialize() {
+        Toolbar myToolBar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolBar);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
-        bLogOut = findViewById(R.id.bLogOutAccount);
+        bLogOut = findViewById(R.id.bLogOut);
         bStartSinglePlayer = findViewById(R.id.bSinglePlayer);
         bStartMultiplayer = findViewById(R.id.bMultiPlayer);
         bLeaderboards = findViewById(R.id.bLeaderboards);
@@ -246,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
 
             if ("<Null>".equals(username)) {
                 showDialogNewUser();
+
             } else {
                 tvUsername.setText(username);
             }

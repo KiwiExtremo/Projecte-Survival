@@ -1,5 +1,6 @@
 package com.example.survivalgame;
 
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -11,11 +12,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
+import androidx.preference.PreferenceManager;
 
 import com.example.survivalgame.gameengine.GameView;
 import com.example.survivalgame.gamepanel.TutorialView;
 
 public class GameActivity extends AppCompatActivity {
+    private boolean isSinglePlayer = true;
     private GameView gameView;
     private TextView tvLeftTutorial, tvRightTutorial, tvHPTutorial, tvScoreTutorial, tvPauseTutorial, tvDoneTutorial;
     private Button bNext;
@@ -25,18 +28,29 @@ public class GameActivity extends AppCompatActivity {
     private TutorialView tutorialView;
     private MediaPlayer mp;
     private int currentTutorial = 1;
+    private boolean isMusic;
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle.getInt("Mode") == 1) {
+            isSinglePlayer = false;
+        }
+
         setContentView(R.layout.activity_game);
         gameView = findViewById(R.id.gameView);
+        gameView.setGameMode(isSinglePlayer);
+
+        getFromSharedPrefs();
 
         fetchViewsFromTutorial();
         checkToShowTutorial();
 
-        startBGMusic();
+        updateBackgroundMusic();
     }
 
     @Override
@@ -48,8 +62,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        mp.setLooping(true);
-        mp.start();
+        updateBackgroundMusic();
     }
 
     @Override
@@ -77,17 +90,10 @@ public class GameActivity extends AppCompatActivity {
         super.onDestroy();
 
         if (mp != null && mp.isPlaying()) {
-            mp.stop();
-            mp.release();
+            mp.pause();
         }
     }
 
-    private void startBGMusic() {
-        mp = MediaPlayer.create(GameActivity.this, R.raw.synthwave_bg_music);
-
-        mp.setLooping(true);
-        mp.start();
-    }
     public void showDialogGameOver(int endCode, int score) {
         runOnUiThread(() -> {
             // setup the alert builder
@@ -147,8 +153,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void bOnClickNextTutorial(View view) {
-        ConstraintLayout.LayoutParams joystickParams = (ConstraintLayout.LayoutParams) tvLeftTutorial.getLayoutParams();
-
         switch (currentTutorial) {
             // Show movement joystick tutorial
             case 0:
@@ -246,7 +250,10 @@ public class GameActivity extends AppCompatActivity {
                 // Start the game
                 gameView.getGameLoop().setRunning(true);
 
-                // update sharedPrefs to not show again
+                // Update the sharedPrefs to not show the dialog again
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("show_tutorial", false);
+                editor.apply();
                 break;
 
             default:
@@ -257,12 +264,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void checkToShowTutorial() {
-        // TODO fetch from sharedprefs whether or not to show the tutorial
-        boolean showTutorial = true;
+        boolean showTutorial = pref.getBoolean("show_tutorial", true);
 
-        if (showTutorial) {
-            // Do nothing, as the tutorial layout is shown by default
-        } else {
+        if (!showTutorial) {
             // Remove the tutorial layout
             parentLayout.removeView(tutorialLayout);
 
@@ -286,6 +290,18 @@ public class GameActivity extends AppCompatActivity {
         tutorialView.invalidate();
     }
 
+    private void updateBackgroundMusic() {
+        isMusic = pref.getBoolean("check_game_music", true);
+
+        if (isMusic) {
+            mp.setLooping(true);
+            mp.start();
+
+        } else if (mp != null && mp.isPlaying()) {
+            mp.pause();
+        }
+    }
+
     private void fetchViewsFromTutorial() {
         tvLeftTutorial = findViewById(R.id.tvJoystickLeft);
         tvRightTutorial = findViewById(R.id.tvJoystickRight);
@@ -307,6 +323,12 @@ public class GameActivity extends AppCompatActivity {
 
         tutorialLayout = findViewById(R.id.tutorialLayout);
         parentLayout = findViewById(R.id.parentLayout);
+    }
+
+    private void getFromSharedPrefs() {
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        mp = MediaPlayer.create(GameActivity.this, R.raw.synthwave_bg_music);
     }
 
     @Override
