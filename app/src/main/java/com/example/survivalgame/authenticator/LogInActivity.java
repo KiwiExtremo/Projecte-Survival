@@ -15,7 +15,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.example.survivalgame.R;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
@@ -33,13 +32,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LogInActivity extends AppCompatActivity {
-    private static final int RC_SIGN_IN = 1;
     private EditText etUserMail, etPassword;
     private TextInputLayout etPasswordLayout;
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
 
-    private BeginSignInRequest signInRequest;
     private GoogleSignInClient mGoogleSignInClient;
     private SignInButton signInButton;
     private ActivityResultLauncher<Intent> resultLauncher;
@@ -154,7 +151,7 @@ public class LogInActivity extends AppCompatActivity {
 
                     } catch (ApiException e) {
                         // Google Sign In failed, update UI appropriately
-                        Toast.makeText(getApplicationContext(), "Google sign in failed"+ e,Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Google sign in failed" + e.toString(), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Toast.makeText(LogInActivity.this, "Error: " + result.getResultCode(), Toast.LENGTH_SHORT).show();
@@ -171,7 +168,6 @@ public class LogInActivity extends AppCompatActivity {
         Intent i = new Intent(this, MainActivity.class);
 
         startActivity(i);
-
         finish();
     }
 
@@ -180,17 +176,14 @@ public class LogInActivity extends AppCompatActivity {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
-                // Sign in success, update UI with the signed-in user's information
+                startMainActivity();
+
                 Toast.makeText(getApplicationContext(), "signInWithCredential:success", Toast.LENGTH_SHORT).show();
 
-                // TODO use user's information and pass it to the game activity
                 FirebaseUser user = mAuth.getCurrentUser();
 
-                startMainActivity();
             } else {
-                // If sign in fails, display a message to the user.
                 Toast.makeText(getApplicationContext(), "signInWithCredential:failure", Toast.LENGTH_SHORT).show();
-                //Log.w(TAG, "signInWithCredential:failure", task.getException());
             }
         });
     }

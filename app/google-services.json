@@ -12,20 +12,7 @@
           "package_name": "com.example.survivalgame"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "983202190663-8eb9kl966ou3pr7995k87ordgbp6d8gd.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.survivalgame",
-            "certificate_hash": "f2a913faf7ff3acf6b219927e0321c6e2b3afb51"
-          }
-        },
-        {
-          "client_id": "983202190663-fdojqsa5ukb635647juiusf134kb1mjb.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyAlVJGdvaHYk-6xB_4FChCIenWPx6Xsjlw"
@@ -33,12 +20,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "983202190663-fdojqsa5ukb635647juiusf134kb1mjb.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -31,7 +31,7 @@
     <string name="dialog.recovery_email.body">An email has been sent to %s. Please check your email and follow the steps.</string>
     <string name="dialog.recovery_email.positive">I understand!</string>
 
-    <string name="google.sign_in.default_web_client">979601923902-mq8e7ph86es0tkafb2nqaksc3e7s4sif.apps.googleusercontent.com</string>
+    <string name="google.sign_in.default_web_client">983202190663-fdojqsa5ukb635647juiusf134kb1mjb.apps.googleusercontent.com</string>
 
     <!-- Lobby strings -->
     <string name="text_view.title.lobby">Lobby</string>
@@ -112,4 +112,5 @@
 
     <string name="button.tutorial.next">Next</string>
     <string name="button.tutorial.done">Got it!</string>
+    <string name="edit_text_error_invalid_email">Invalid Format</string>
 </resources>

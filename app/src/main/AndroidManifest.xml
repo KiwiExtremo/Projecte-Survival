@@ -50,4 +50,8 @@
         <activity
             android:name=".PreferencesActivity" />
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
 </manifest>

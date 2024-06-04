@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.Guideline;
 import com.example.survivalgame.authenticator.MainActivity;
 import com.example.survivalgame.gameengine.GameView;
 import com.example.survivalgame.gamepanel.TutorialView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class GameActivity extends AppCompatActivity {
     private boolean isSinglePlayer = true;
@@ -93,6 +94,7 @@ public class GameActivity extends AppCompatActivity {
         if (mp != null && mp.isPlaying()) {
             mp.pause();
         }
+
     }
 
     public void showDialogGameOver(int score) {
