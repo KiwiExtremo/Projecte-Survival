@@ -32,8 +32,8 @@ public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
     private TextView goToLogin;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
     @Override
     public void onStart() {

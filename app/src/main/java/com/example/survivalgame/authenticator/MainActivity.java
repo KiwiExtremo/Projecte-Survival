@@ -13,11 +13,13 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,8 @@ import androidx.core.content.ContextCompat;
 import com.example.survivalgame.GameActivity;
 import com.example.survivalgame.R;
 import com.example.survivalgame.multiplayer.WiFiDirectBroadcastReceiver;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +41,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static final int MODE_SINGLEPLAYER = 0;
@@ -59,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     //Firebase
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
-    private boolean checkUsername = false;
+    private boolean isUsernameNull = false;
     private boolean isUsernameChecked = false;
     private int usernameError;
 
@@ -197,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
     private void bOnClickStartSinglePlayer() {
         Intent intent = new Intent(getApplicationContext(), GameActivity.class);
         intent.putExtra("Mode", MODE_SINGLEPLAYER);
+        intent.putExtra("userEmail", user.getEmail());
         startActivity(intent);
     }
 
@@ -207,12 +220,93 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void bOnClickShowLeaderboards() {
-        // TODO fetch data from database and show it
-        showDialogLeaderboards();
+        getScoresFromFirebase();
+    }
+
+    private void getScoresFromFirebase() {
+        databaseReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DataSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
+                        Map<String, Integer> scoreMap = new HashMap<>();
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            String username = userSnapshot.child("username").getValue(String.class);
+                            Integer score = userSnapshot.child("puntuacion").getValue(Integer.class);
+                            if (username != null && score != null) {
+                                scoreMap.put(username, score);
+                            }
+                        }
+                        showDialogLeaderboards(scoreMap);
+                    } else {
+                        Toast.makeText(MainActivity.this, "No hay datos disponibles.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "Error al obtener los datos.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private Map<String, Integer> sortMapByValue(Map<String, Integer> unsortedMap) {
+        List<Map.Entry<String, Integer>> list = new LinkedList<>(unsortedMap.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return (o2.getValue()).compareTo(o1.getValue());
+            }
+        });
+
+        Map<String, Integer> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
+    }
+
+    private void showDialogLeaderboards(Map<String, Integer> scoreMap) {
+        Map<String, Integer> sortedMap = sortMapByValue(scoreMap);
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("Leaderboard");
+
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        int rank = 1;
+        for (Map.Entry<String, Integer> entry : sortedMap.entrySet()) {
+            TextView playerTextView = new TextView(this);
+            playerTextView.setText(rank + ". " + entry.getKey() + ": " + entry.getValue());
+
+            layout.addView(playerTextView);
+            rank++;
+        }
+
+        scrollView.addView(layout);
+
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.addView(scrollView);
+
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                int numberOfPlayersToShow = 3;
+                int heightPerPlayer = 100;
+                int maxHeight = numberOfPlayersToShow * heightPerPlayer;
+                scrollView.getLayoutParams().height = maxHeight;
+                scrollView.requestLayout();
+            }
+        });
+
+        builder.setView(container);
+        builder.setPositiveButton("OK", null);
+        builder.show();
     }
 
     private void showDialogNewUser(String email) {
-        // setup the alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.dialog_pause_title));
         builder.setMessage(getString(R.string.dialog_pause_body));
@@ -224,7 +318,6 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout llUsername = createWrappedLayout(etUsername);
         builder.setView(llUsername);
 
-        // add the buttons
         builder.setPositiveButton(getString(R.string.dialog_pause_positive), (dialog, which) -> {
 
         });
@@ -246,8 +339,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        // create and show the alert dialog
         AlertDialog dialog = builder.create();
         dialog.show();
         dialog.setCancelable(false);
@@ -267,10 +358,6 @@ public class MainActivity extends AppCompatActivity {
         return linearLayout;
     }
 
-    private void showDialogLeaderboards() {
-        // TODO show leaderboards
-    }
-
     private void initialize() {
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -288,35 +375,37 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
             startActivity(intent);
             finish();
-
         } else {
             String email = user.getEmail();
-
-            if (checkIfUsernameIsNull(email)) {
-                showDialogNewUser(user.getEmail());
-            } else {
-                databaseReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            DataSnapshot puntuacionSnapshot = snapshot.child(email).child("username");
-                            if (puntuacionSnapshot.exists() && puntuacionSnapshot.getValue() != null) {
-                                String data = puntuacionSnapshot.getValue().toString();
-                                tvUsername.setText(data);
-                            } else {
-                                Toast.makeText(MainActivity.this, "No se ha encontrado un usuario con este nombre", Toast.LENGTH_SHORT).show();
+            checkUsername(email, new Runnable() {
+                @Override
+                public void run() {
+                    if (isUsernameNull) {
+                        showDialogNewUser(user.getEmail());
+                    } else {
+                        databaseReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    DataSnapshot usernameSnapshot = snapshot.child(email.replace(".", "_")).child("username");
+                                    if (usernameSnapshot.exists() && usernameSnapshot.getValue() != null) {
+                                        String data = usernameSnapshot.getValue().toString();
+                                        tvUsername.setText(data);
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "No se ha encontrado un usuario con este nombre", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
                             }
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
                     }
-                });
-            }
+                }
+            });
         }
     }
-
 
     private void checkAndSetUsername(String email, String newUsername) {
         DatabaseReference usersReference = firebaseDatabase.getReference("Users");
@@ -351,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean checkIfUsernameIsNull(String email) {
+    private void checkUsername(String email, Runnable callback) {
         DatabaseReference nameReference = firebaseDatabase.getReference("Users").child(email.replace(".", "_")).child("username");
 
         nameReference.get().addOnCompleteListener(task -> {
@@ -360,16 +449,16 @@ public class MainActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     String currentUsername = dataSnapshot.getValue(String.class);
                     if ("<null>".equals(currentUsername)) {
-                        checkUsername = true;
+                        isUsernameNull = true;
                     } else {
-                        Toast.makeText(MainActivity.this, "El usuario ya tiene un username asignado", Toast.LENGTH_SHORT).show();
+                        tvUsername.setText(currentUsername);
                     }
                 }
             } else {
                 Toast.makeText(MainActivity.this, "Error al comprobar el nombre de usuario", Toast.LENGTH_SHORT).show();
             }
+            callback.run();
         });
-        return true;
     }
 
     private void initializeWiFiP2P() {

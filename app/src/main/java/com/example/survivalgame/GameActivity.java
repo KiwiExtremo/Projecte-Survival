@@ -6,7 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -14,6 +16,13 @@ import androidx.constraintlayout.widget.Guideline;
 
 import com.example.survivalgame.gameengine.GameView;
 import com.example.survivalgame.gamepanel.TutorialView;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class GameActivity extends AppCompatActivity {
     private GameView gameView;
@@ -25,10 +34,17 @@ public class GameActivity extends AppCompatActivity {
     private TutorialView tutorialView;
     private MediaPlayer mp;
     private int currentTutorial = 1;
+    private FirebaseDatabase firebaseDatabase;
+    private String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle bundle = getIntent().getExtras();
+       userEmail = bundle.getString("userEmail");
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         setContentView(R.layout.activity_game);
         gameView = findViewById(R.id.gameView);
@@ -88,18 +104,17 @@ public class GameActivity extends AppCompatActivity {
         mp.setLooping(true);
         mp.start();
     }
-    public void showDialogGameOver(int endCode, int score) {
+
+    public void showDialogGameOver(int score) {
         runOnUiThread(() -> {
             // setup the alert builder
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.dialog_game_over_title));
 
-            if (endCode == 0) {
-                builder.setMessage(getString(R.string.dialog_game_over_body_win, score));
 
-            } else {
-                builder.setMessage(getString(R.string.dialog_game_over_body_lose, score));
-            }
+            builder.setMessage(getString(R.string.dialog_game_over_body_win, score));
+
+            saveScoreIntoDatabase(score);
             // add the buttons
             builder.setPositiveButton(getString(R.string.dialog_game_over_positive), (dialog, which) -> {
                 gameView.getGameLoop().setGameFinished(true);
@@ -110,6 +125,29 @@ public class GameActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.setCancelable(false);
             dialog.show();
+        });
+    }
+
+    private void saveScoreIntoDatabase(int score) {
+        DatabaseReference userReference = firebaseDatabase.getReference("Users").child(userEmail.replace(".", "_"));
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    if (snapshot.hasChild("puntuacion")) {
+                        int puntuacionFirebase = snapshot.child("puntuacion").getValue(Integer.class);
+                        if (score > puntuacionFirebase) {
+                            userReference.child("puntuacion").setValue(score);
+                        }
+                    }
+                } else {
+                    Toast.makeText(GameActivity.this, "Usuario no encontrado", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(GameActivity.this, "Error de base de datos: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -128,7 +166,8 @@ public class GameActivity extends AppCompatActivity {
         builder.setNeutralButton(getString(R.string.dialog_pause_neutral), (dialog, which) -> {
             // Finish the run and save score
             // TODO save score to Firebase
-            showDialogGameOver(0, 0);
+
+            showDialogGameOver(gameView.currentScore);
         });
 
         builder.setNegativeButton(getString(R.string.dialog_pause_negative), (dialog, which) -> {

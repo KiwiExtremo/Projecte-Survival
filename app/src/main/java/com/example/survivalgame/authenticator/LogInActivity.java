@@ -116,7 +116,7 @@ public class LogInActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Toast.makeText(getApplicationContext(), getString(R.string.toast_login_successful), Toast.LENGTH_SHORT).show();
 
-                startGameActivity();
+                startMainActivity();
 
             } else {
                 // TODO check if auth fail is due to user not being in the database, password not patching user's, or other
@@ -170,8 +170,8 @@ public class LogInActivity extends AppCompatActivity {
         resultLauncher.launch(new Intent(mGoogleSignInClient.getSignInIntent()));
     }
 
-    private void startGameActivity() {
-        Intent i = new Intent(this, GameActivity.class);
+    private void startMainActivity() {
+        Intent i = new Intent(this, MainActivity.class);
 
         startActivity(i);
 
@@ -183,7 +183,7 @@ public class LogInActivity extends AppCompatActivity {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
-                startGameActivity();
+                startMainActivity();
 
                 // Sign in success, update UI with the signed-in user's information
                 Toast.makeText(getApplicationContext(), "signInWithCredential:success", Toast.LENGTH_SHORT).show();
