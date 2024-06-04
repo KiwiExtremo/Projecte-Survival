@@ -47,4 +47,8 @@
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
 </manifest>
