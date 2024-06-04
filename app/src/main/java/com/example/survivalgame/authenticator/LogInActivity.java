@@ -15,8 +15,8 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-import com.example.survivalgame.GameActivity;
 import com.example.survivalgame.R;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -62,6 +62,9 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Toolbar myToolBar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolBar);
 
         fetchFromActivity();
         initializeGoogleSignInOptions();
@@ -140,8 +143,7 @@ public class LogInActivity extends AppCompatActivity {
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
-
-                if(result.getResultCode() == Activity.RESULT_OK) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent intent = result.getData();
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
                     try {
@@ -154,6 +156,8 @@ public class LogInActivity extends AppCompatActivity {
                         // Google Sign In failed, update UI appropriately
                         Toast.makeText(getApplicationContext(), "Google sign in failed"+ e,Toast.LENGTH_LONG).show();
                     }
+                } else {
+                    Toast.makeText(LogInActivity.this, "Error: " + result.getResultCode(), Toast.LENGTH_SHORT).show();
                 }
             }
         });

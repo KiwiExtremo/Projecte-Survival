@@ -27,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.preference.PreferenceManager;
 
 import com.example.survivalgame.GameActivity;
 import com.example.survivalgame.PreferencesActivity;
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter mIntentFilter;
     private boolean isMusic;
     private MediaPlayer mp;
-    private SharedPreferences pref;
+    public static SharedPreferences pref;
 
 
     @Override
@@ -70,11 +69,32 @@ public class MainActivity extends AppCompatActivity {
         updateBackgroundMusic();
         setOnClickListeners();
 
+        checkUserLoggedIn();
+
         if (allPermissionsGranted()) {
             initializeWiFiP2P();
 
         } else {
             requestPermissions();
+        }
+    }
+
+    private void checkUserLoggedIn() {
+        if (user == null) {
+            Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
+            startActivity(intent);
+            finish();
+
+        } else {
+            // TODO get username from database
+            String username = "Thresholder";
+
+            if ("<Null>".equals(username)) {
+                showDialogNewUser();
+
+            } else {
+                tvUsername.setText(username);
+            }
         }
     }
 
@@ -111,6 +131,10 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         // unregisterReceiver(mReceiver);
         FirebaseAuth.getInstance().signOut();
+
+        if (mp != null && mp.isPlaying()) {
+            mp.pause();
+        }
     }
 
     @Override
@@ -308,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getFromSharedPrefs() {
-        pref = PreferenceManager.getDefaultSharedPreferences(this);
+        pref = this.getPreferences(Context.MODE_PRIVATE);
 
         mp = MediaPlayer.create(MainActivity.this, R.raw.lobby_bg_music);
     }
@@ -326,23 +350,6 @@ public class MainActivity extends AppCompatActivity {
         tvUsername = findViewById(R.id.tvUsername);
         tvTeammate = findViewById(R.id.tvTeammate);
         user = firebaseAuth.getCurrentUser();
-
-        if (user == null) {
-            Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
-            startActivity(intent);
-            finish();
-
-        } else {
-            // TODO get username from database
-            String username = "Thresholder";
-
-            if ("<Null>".equals(username)) {
-                showDialogNewUser();
-
-            } else {
-                tvUsername.setText(username);
-            }
-        }
     }
 
     private void initializeWiFiP2P() {

@@ -12,8 +12,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
-import androidx.preference.PreferenceManager;
 
+import com.example.survivalgame.authenticator.MainActivity;
 import com.example.survivalgame.gameengine.GameView;
 import com.example.survivalgame.gamepanel.TutorialView;
 
@@ -44,6 +44,7 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
         gameView = findViewById(R.id.gameView);
         gameView.setGameMode(isSinglePlayer);
+        gameView.setParent(this);
 
         getFromSharedPrefs();
 
@@ -94,18 +95,13 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    public void showDialogGameOver(int endCode, int score) {
+    public void showDialogGameOver(int score) {
         runOnUiThread(() -> {
             // setup the alert builder
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.dialog_game_over_title));
+            builder.setMessage(getString(R.string.dialog_game_over_body, score));
 
-            if (endCode == 0) {
-                builder.setMessage(getString(R.string.dialog_game_over_body_win, score));
-
-            } else {
-                builder.setMessage(getString(R.string.dialog_game_over_body_lose, score));
-            }
             // add the buttons
             builder.setPositiveButton(getString(R.string.dialog_game_over_positive), (dialog, which) -> {
                 gameView.getGameLoop().setGameFinished(true);
@@ -134,7 +130,7 @@ public class GameActivity extends AppCompatActivity {
         builder.setNeutralButton(getString(R.string.dialog_pause_neutral), (dialog, which) -> {
             // Finish the run and save score
             // TODO save score to Firebase
-            showDialogGameOver(0, 0);
+            showDialogGameOver(gameView.currentScore);
         });
 
         builder.setNegativeButton(getString(R.string.dialog_pause_negative), (dialog, which) -> {
@@ -326,7 +322,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void getFromSharedPrefs() {
-        pref = PreferenceManager.getDefaultSharedPreferences(this);
+        pref = MainActivity.pref;
 
         mp = MediaPlayer.create(GameActivity.this, R.raw.synthwave_bg_music);
     }

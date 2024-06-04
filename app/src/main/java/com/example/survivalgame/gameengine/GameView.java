@@ -14,9 +14,10 @@ import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.preference.PreferenceManager;
 
+import com.example.survivalgame.GameActivity;
 import com.example.survivalgame.R;
+import com.example.survivalgame.authenticator.MainActivity;
 import com.example.survivalgame.gameobject.Bullet;
 import com.example.survivalgame.gameobject.Circle;
 import com.example.survivalgame.gameobject.Crosshair;
@@ -52,11 +53,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private Paint bgCenterPaint, bgOuterPaint, bgOutermostPaint;
     private boolean isSinglePlayer, isHost;
     private boolean showFrameData;
+    private GameActivity parent;
 
     public GameView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         // Get sharedPreferences
-        pref = PreferenceManager.getDefaultSharedPreferences(context);
+        pref = MainActivity.pref;
 
         // Get screen sizes on runtime
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -67,7 +69,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         surfaceHolder.addCallback(this);
 
         // Create a new game loop
-        gameLoop = new GameLoop(this, surfaceHolder);
+        gameLoop = new GameLoop(this, surfaceHolder, parent);
 
     // Initialize the game panels
         performance = new Performance(context, gameLoop);
@@ -230,6 +232,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         } else {
             // Finish the game when the player loses all healthpoints
+            gameLoop.setScore(currentScore);
             gameLoop.setGameFinished(true);
         }
     }
@@ -346,5 +349,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setGameMode(boolean isSinglePlayer) {
         this.isSinglePlayer = isSinglePlayer;
+    }
+
+    public void setParent(GameActivity parent) {
+        this.parent = parent;
     }
 }

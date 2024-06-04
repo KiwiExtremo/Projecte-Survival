@@ -38,8 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="36dp"
-                app:srcCompat="@drawable/ic_launcher_foreground"
-                tools:srcCompat="@drawable/ic_launcher_foreground" />
+                app:srcCompat="@drawable/lobby"
+                tools:srcCompat="@drawable/lobby" />
 
             <TextView
                 android:id="@+id/tvTitle"

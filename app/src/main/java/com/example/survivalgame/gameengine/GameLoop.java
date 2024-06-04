@@ -1,21 +1,25 @@
 package com.example.survivalgame.gameengine;
 
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.SurfaceHolder;
+
+import com.example.survivalgame.GameActivity;
 
 public class GameLoop extends Thread {
     public static final double MAX_UPS = 60.0;
     public static final double UPS_PERIOD = 1E+3 / MAX_UPS;
+    private final GameActivity parent;
     private boolean isRunning = false, gameFinished = false, firstFrame = true;
     private final SurfaceHolder surfaceHolder;
     private final GameView game;
+    private int score = 0;
     private double averageUPS;
     private double averageFPS;
 
-    public GameLoop(GameView game, SurfaceHolder surfaceHolder) {
+    public GameLoop(GameView game, SurfaceHolder surfaceHolder, GameActivity parent) {
         this.game = game;
         this.surfaceHolder = surfaceHolder;
+        this.parent = parent;
     }
 
     public void setRunning(boolean running) {
@@ -32,6 +36,10 @@ public class GameLoop extends Thread {
 
     public double getAverageFPS() {
         return averageFPS;
+    }
+
+    public void setScore(int currentScore) {
+        this.score = currentScore;
     }
 
     public void startLoop() {
@@ -127,8 +135,8 @@ public class GameLoop extends Thread {
                 firstFrame = false;
             }
         }
-        Log.w("GameLoop", "Game finished");
         // TODO start the game over dialog here instead of from GameActivity
+        parent.showDialogGameOver(score);
 
     }
 }
