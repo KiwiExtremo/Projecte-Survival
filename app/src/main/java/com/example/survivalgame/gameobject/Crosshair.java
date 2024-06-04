@@ -35,7 +35,7 @@ public class Crosshair extends Circle {
 
         orbitPaint = new Paint();
         orbitPaint.setColor(ContextCompat.getColor(context, R.color.crosshair_color));
-        orbitPaint.setStrokeWidth(2);
+        orbitPaint.setStrokeWidth(5);
         orbitPaint.setStyle(Paint.Style.STROKE);
         orbitPaint.setPathEffect(new DashPathEffect(new float[]{(float) (10 * Math.PI), (float) (10 * Math.PI)}, (float)1.0));
     }
@@ -49,7 +49,7 @@ public class Crosshair extends Circle {
     }
 
     /**
-     * update() overrides the super class method update(). It updates the crosshair based on the
+     * Overrides the super class method update(). It updates the crosshair based on the
      * joystick direction, and also updates the orbit position based on the player position.
      */
     @Override
@@ -86,7 +86,7 @@ public class Crosshair extends Circle {
     }
 
     /**
-     * drawFilledNeon() overrides the super class method {@link Circle#drawFilledNeon(Canvas)}, and draws the orbit
+     * Overrides the super class method {@link Circle#drawFilledNeon(Canvas)}, and draws the orbit
      * around the player before calling the super method to handle the drawing of the crosshair.
      *
      * @param canvas the canvas on which the circles will be drawn.

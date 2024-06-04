@@ -41,7 +41,7 @@ public class Bullet extends Circle {
     }
 
     /**
-     * update() overrides the super method {@link Circle#update()}. It updates the bullet's position based on the
+     * Overrides the super method {@link Circle#update()}. It updates the bullet's position based on the
      * bullet's velocity.
      */
     @Override

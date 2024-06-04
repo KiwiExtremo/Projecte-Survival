@@ -10,6 +10,10 @@ import androidx.core.content.ContextCompat;
 import com.example.survivalgame.R;
 import com.example.survivalgame.gameengine.GameLoop;
 
+/**
+ * The Performance class is used to show data on screen while playing. It handles the UPS and FPS,
+ * and also shows the current score to the user.
+ */
 public class Performance {
     private GameLoop gameLoop;
     private Context context;

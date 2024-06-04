@@ -12,6 +12,10 @@ import androidx.core.content.ContextCompat;
 
 import com.example.survivalgame.R;
 
+/**
+ * The TutorialView class extends from the {@link View} class. It is used to show the game tutorial
+ * to the user, and handles the different tutorial parts on the screen.
+ */
 public class TutorialView extends View {
     public static final int JOYSTICK = 1;
     public static final int HEALTHBAR = 2;

@@ -27,8 +27,6 @@ public abstract class Circle extends GameObject {
         // Set color of the borders (outer and inner glow)
         outerPaint = new Paint();
         outerPaint.setColor(color);
-//        outerPaint.setStyle(Paint.Style.STROKE);
-//        outerPaint.setStrokeWidth(15);
 
         // Set color of the white middle glow
         whitePaint = new Paint();
@@ -47,7 +45,7 @@ public abstract class Circle extends GameObject {
     }
 
     /**
-     * isColliding checks if two circle objects are colliding based on their positions and radii.
+     * Checks if two circle objects are colliding based on their positions and radii.
      *
      * @param object1 first object to check collision.
      * @param object2 second object to check collision.
@@ -62,7 +60,7 @@ public abstract class Circle extends GameObject {
     }
 
     /**
-     * drawFilledNeon will draw a couple of circles on the canvas, used for filled neon circles.
+     * Draws a couple of circles on the canvas, used for drawing filled neon circles.
      *
      * @param canvas the canvas on which the circles will be drawn.
      */
@@ -75,7 +73,7 @@ public abstract class Circle extends GameObject {
     }
 
     /**
-     * drawNeon will draw multiple circles on the canvas, in order to simulate a glowing neon ring.
+     * Draws multiple circles on the canvas, in order to simulate a glowing neon ring.
      *
      * @param canvas the canvas on which the circles will be drawn.
      */

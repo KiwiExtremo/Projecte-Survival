@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * The Game class will manage all objects in the game, and will be responsible
+ * The GameView class manages all objects in the game, and is responsible
  * for updating all states and rendering all objects to the screen.
  */
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
@@ -51,9 +51,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean showAimJoystick = false;
     private Performance performance;
     private Paint bgCenterPaint, bgOuterPaint, bgOutermostPaint;
-    private boolean isSinglePlayer, isHost;
+    private boolean isSinglePlayer, isHost = true;
     private boolean showFrameData;
     private GameActivity parent;
+    private boolean gameOverDialogShown = false;
 
     public GameView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -69,11 +70,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         surfaceHolder.addCallback(this);
 
         // Create a new game loop
-        gameLoop = new GameLoop(this, surfaceHolder, parent);
+        gameLoop = new GameLoop(this, surfaceHolder);
 
     // Initialize the game panels
         performance = new Performance(context, gameLoop);
-        showFrameData = pref.getBoolean("check_performance", true);
+        showFrameData = pref.getBoolean("check_performance", false);
 
 
         // Create the joysticks (they're set on approximate positions by default, but will move dynamically when used)
@@ -103,6 +104,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     public GameLoop getGameLoop() {
         return gameLoop;
+    }
+
+    public void setParent(GameActivity parent) {
+        this.parent = parent;
     }
 
     @Override
@@ -217,8 +222,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             bullet.drawFilledNeon(canvas);
         }
 
-
-
         // Draw performance and joysticks while the player is alive
         if (player.getCurrentHealthPoints() > 0) {
             if (showPlayerJoystick) {
@@ -230,10 +233,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
             performance.draw(canvas, currentScore, showFrameData);
 
-        } else {
-            // Finish the game when the player loses all healthpoints
-            gameLoop.setScore(currentScore);
-            gameLoop.setGameFinished(true);
+        } else if (player.getCurrentHealthPoints() == 0) {
+            performance.draw(canvas, currentScore, false);
         }
     }
 
@@ -257,7 +258,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         // Stop updating the game if the player is dead
-        if (player.getCurrentHealthPoints() <= 0) {
+        if (player.getCurrentHealthPoints() <= 0 && !gameOverDialogShown) {
+            gameOverDialogShown = true;
+
+            if (parent != null) {
+                // Finish the game when the player loses all healthpoints
+                gameLoop.setGameFinished(true);
+                parent.showDialogGameOver(currentScore);
+            }
+            return;
+        }
+
+        if (gameOverDialogShown) {
             return;
         }
 
@@ -349,9 +361,5 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setGameMode(boolean isSinglePlayer) {
         this.isSinglePlayer = isSinglePlayer;
-    }
-
-    public void setParent(GameActivity parent) {
-        this.parent = parent;
     }
 }

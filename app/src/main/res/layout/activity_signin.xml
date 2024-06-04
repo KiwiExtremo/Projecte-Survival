@@ -38,8 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="36dp"
-                app:srcCompat="@drawable/lobby"
-                tools:srcCompat="@drawable/lobby" />
+                app:srcCompat="@drawable/register"
+                tools:srcCompat="@drawable/register" />
 
             <TextView
                 android:id="@+id/tvTitle"

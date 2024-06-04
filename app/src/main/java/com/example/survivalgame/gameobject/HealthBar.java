@@ -48,6 +48,14 @@ public class HealthBar {
         blackPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     }
 
+    /**
+     * Handles the drawing of the health bar, drawing a rounded rectangle and then drawing vertical
+     * lines to divide the health bar into individual health points.
+     *
+     * @param canvas the canvas on which the circles will be drawn.
+     * @param screenHeight the height of the screen.
+     * @param screenWidth  the witdh of the screen.
+     */
     public void drawNeon(Canvas canvas, int screenHeight, int screenWidth) {
         float healthPointPercent = (float) player.getCurrentHealthPoints() / Player.MAX_HEALTH_POINTS;
 

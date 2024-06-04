@@ -7,13 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.Guideline;
 
 import com.example.survivalgame.authenticator.MainActivity;
 import com.example.survivalgame.gameengine.GameView;
@@ -24,12 +22,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+/**
+ * The GameActivity class is used to create an interface to show the {@link GameView} and the {@link TutorialView}
+ * to the user. This class handles the Android buttons and the background music of the game. The game over is also
+ * handled by this class, saving the user score into the database and ending the activity, before going back to the
+ * {@link MainActivity}.
+ * is
+ */
 public class GameActivity extends AppCompatActivity {
     private boolean isSinglePlayer = true;
     private GameView gameView;
     private TextView tvLeftTutorial, tvRightTutorial, tvHPTutorial, tvScoreTutorial, tvPauseTutorial, tvDoneTutorial;
     private Button bNext;
-    private Guideline guideLeft, guideMid, guideRight, guideMidLeft, guideMidRight, guideTop, guideBottom;
     private ConstraintLayout tutorialLayout;
     private FrameLayout parentLayout;
     private TutorialView tutorialView;
@@ -142,13 +146,12 @@ public class GameActivity extends AppCompatActivity {
                             userReference.child("puntuacion").setValue(score);
                         }
                     }
-                } else {
-                    Toast.makeText(GameActivity.this, "Usuario no encontrado", Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(GameActivity.this, "Error de base de datos: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                // Do nothing
             }
         });
     }
@@ -346,14 +349,6 @@ public class GameActivity extends AppCompatActivity {
 
         tutorialView = findViewById(R.id.tutorialView);
         bNext = findViewById(R.id.bNext);
-
-        guideLeft = findViewById(R.id.guidelineLeft);
-        guideMid = findViewById(R.id.guidelineMiddle);
-        guideRight = findViewById(R.id.guidelineRight);
-        guideMidLeft = findViewById(R.id.guidelineMidLeft);
-        guideMidRight = findViewById(R.id.guidelineMidRight);
-        guideTop = findViewById(R.id.guidelineTop);
-        guideBottom = findViewById(R.id.guidelineBottom);
 
         tutorialLayout = findViewById(R.id.tutorialLayout);
         parentLayout = findViewById(R.id.parentLayout);

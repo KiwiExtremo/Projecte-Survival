@@ -6,6 +6,11 @@ import android.widget.Toast;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
+/**
+ * The PreferencesFragment class extends the {@link PreferenceFragmentCompat} class. It is used to
+ * control the {@link PreferencesActivity}, to be able to show toasts or set limits before saving
+ * data into the shared preferences.
+ */
 public class PreferencesFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -45,6 +50,11 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
         }
     }
 
+    /**
+     * it shows the color chosen by the user, whether it be an enemy's or the player's.
+     *
+     * @param chosenColor the chosen color on the {@link PreferencesActivity}.
+     */
     private void showToastChosenColor(CharSequence chosenColor) {
         Toast.makeText(getActivity(), getString(R.string.toast_chosen_color, chosenColor), Toast.LENGTH_SHORT).show();
     }

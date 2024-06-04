@@ -6,6 +6,10 @@ import android.graphics.Paint;
 
 import com.example.survivalgame.Utils;
 
+/**
+ * the Joystick class is used as an interface to let the user control both the player and the aiming
+ * to shoot bullets.
+ */
 public class Joystick {
     private Paint innerCirclePaint, outerCirclePaint;
     private int outerCircleCenterPositionX, outerCircleCenterPositionY;

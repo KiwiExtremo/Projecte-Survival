@@ -17,7 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.survivalgame.R;
-import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -60,14 +59,13 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Toolbar myToolBar = findViewById(R.id.toolbar);
-        setSupportActionBar(myToolBar);
-
         fetchFromActivity();
         initializeGoogleSignInOptions();
         createActivityForResultLauncher();
 
-        signInButton.setOnClickListener(this::bOnClickSignInWithGoogle);
+        signInButton.setOnClickListener(view -> {
+            bOnClickSignInWithGoogle(view);
+        });
     }
 
     public void bOnClickStartLoginActivity(View view) {
@@ -112,16 +110,10 @@ public class LogInActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             progressBar.setVisibility(View.GONE);
             if (task.isSuccessful()) {
-                Toast.makeText(getApplicationContext(), getString(R.string.toast_login_successful), Toast.LENGTH_SHORT).show();
-
                 startMainActivity();
 
             } else {
-                // TODO check if auth fail is due to user not being in the database, password not patching user's, or other
                 Toast.makeText(this, getString(R.string.toast_login_auth_failed), Toast.LENGTH_SHORT).show();
-
-                // TODO delete this (TEMPORARY FIX)
-                startMainActivity();
             }
         });
     }
@@ -146,15 +138,11 @@ public class LogInActivity extends AppCompatActivity {
                     try {
                         // Google Sign In was successful, authenticate with Firebase
                         GoogleSignInAccount account = task.getResult(ApiException.class);
-                        Toast.makeText(getApplicationContext(), "firebaseAuthWithGoogle:" + account.getId(), Toast.LENGTH_SHORT).show();
                         firebaseAuthWithGoogle(account.getIdToken());
-
                     } catch (ApiException e) {
                         // Google Sign In failed, update UI appropriately
-                        Toast.makeText(getApplicationContext(), "Google sign in failed" + e.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.toast_login_auth_failed), Toast.LENGTH_LONG).show();
                     }
-                } else {
-                    Toast.makeText(LogInActivity.this, "Error: " + result.getResultCode(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -166,24 +154,17 @@ public class LogInActivity extends AppCompatActivity {
 
     private void startMainActivity() {
         Intent i = new Intent(this, MainActivity.class);
-
         startActivity(i);
         finish();
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
-        // TODO update toasts
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
                 startMainActivity();
-
-                Toast.makeText(getApplicationContext(), "signInWithCredential:success", Toast.LENGTH_SHORT).show();
-
-                FirebaseUser user = mAuth.getCurrentUser();
-
             } else {
-                Toast.makeText(getApplicationContext(), "signInWithCredential:failure", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.toast_login_auth_failed), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -202,7 +183,6 @@ public class LogInActivity extends AppCompatActivity {
                 .requestIdToken(getString(R.string.google_sign_in_default_web_client))
                 .requestEmail()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 }

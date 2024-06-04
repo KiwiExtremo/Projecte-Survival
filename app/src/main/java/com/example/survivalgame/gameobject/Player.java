@@ -33,7 +33,7 @@ public class Player extends Circle {
     }
 
     /**
-     * update() overrides the super method {@link GameObject#update()}. It updates the player's position
+     * Overrides the super method {@link GameObject#update()}. It updates the player's position
      * based on the joystick direction.
      */
     @Override
@@ -48,8 +48,8 @@ public class Player extends Circle {
     }
 
     /**
-     * drawNeon() calls the super method to handle the drawing of the player before drawing the
-     * healthbar on the screen.
+     * Calls the super method to handle the drawing of the player before drawing the
+     * health bar on the screen.
      *
      * @param canvas the canvas on which the circles will be drawn.
      */

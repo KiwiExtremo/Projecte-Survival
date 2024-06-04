@@ -9,7 +9,7 @@ import com.example.survivalgame.gameengine.GameLoop;
 import com.example.survivalgame.R;
 
 /**
- * An enemy is a non-playable character that always move in the direction
+ * An enemy is a non-playable character that always moves in the direction
  * of the player. The Enemy class extends from the Circle, which is
  * an extension of GameObject.
  */
@@ -57,7 +57,7 @@ public class Enemy extends Circle {
     }
 
     /**
-     * readyToSpawn() checks if a new enemy should spawn based on the rate of spawns/minute.
+     * Checks if a new enemy should spawn based on the rate of spawns/minute.
      *
      * @return true if the enemy is ready to spawn, false otherwise.
      */
@@ -72,7 +72,7 @@ public class Enemy extends Circle {
     }
 
     /**
-     * update() overrides the super method update(). It updates the enemy position based on its
+     * Overrides the super method update(). It updates the enemy position based on its
      * direction. Additionally, every 60 game updates, the enemy will recalculate its direction to
      * chase after the closest player.
      */

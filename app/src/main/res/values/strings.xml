@@ -25,6 +25,8 @@
 
     <string name="toast.login.successful">Login successful</string>
     <string name="toast.login.auth_failed">Authentication failed</string>
+    <string name="toast.signin.successful">Account created successfully</string>
+    <string name="toast.signin.unsuccessful">There was an error when creating an account: %s</string>
     <string name="toast.recovery_email.unsuccessful">There was a problem sending the email</string>
 
     <string name="dialog.recovery_email.title">Email sent</string>
@@ -36,14 +38,35 @@
     <!-- Lobby strings -->
     <string name="text_view.title.lobby">Lobby</string>
     <string name="text_view.title.singleplayer">Want to play alone?</string>
+    <string name="text_view.username.loading">Loading...</string>
     <string name="text_view.waiting">Looking for a teammate...</string>
+    <string name="text_view.error.no_permissions">You can only play alone</string>
 
     <string name="button.leaderboards">Leaderboards</string>
     <string name="button.log_out">Log out</string>
     <string name="button.start.singleplayer">Play alone</string>
     <string name="button.start.multiplayer">Play together</string>
 
-    <string name="toast.error.no_permissions">Permissions are required to play multiplayer</string>
+    <string name="toast.lobby.error.no_permissions">Permissions are required to play multiplayer</string>
+    <string name="toast.lobby.error.no_leaderboards_data">Permissions are required to play multiplayer</string>
+    <string name="toast.lobby.error.database">Permissions are required to play multiplayer</string>
+
+    <string name="dialog.leaderboards.title">Leaderboards</string>
+    <string name="dialog.leaderboards.message">These are the current scores:</string>
+    <string name="dialog.leaderboards.positive">Cool!</string>
+    <string name="hash_map.leaderboards.player">Player: %s</string>
+    <string name="hash_map.leaderboards.score">%d points</string>
+
+    <string name="dialog.new_user.title">New user</string>
+    <string name="dialog.new_user.body">Looks like you\'re new. Please select your username:</string>
+    <string name="dialog.new_user.hint">Your username</string>
+    <string name="dialog.new_user.positive">Done</string>
+    <string name="dialog.new_user.edit_text.error.empty">please input a username</string>
+    <string name="dialog.new_user.edit_text.error.already_in_use">This username is already in use</string>
+
+    <string name="toast.lobby.new_user_saved">Your username has been saved successfully</string>
+    <string name="toast.lobby.error.check_database">There was an error while checking the database</string>
+    <string name="toast.lobby.multiplayer.discovery_started">Peer discovery started</string>
 
     <!-- Settings and shared prefs strings -->
     <string name="action.settings">Settings</string>

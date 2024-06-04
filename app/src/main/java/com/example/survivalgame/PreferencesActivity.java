@@ -8,6 +8,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+/**
+ * The PreferencesActivity class is used to create an interface with the user, so that they can
+ * change the shared preferences settings easily.
+ */
 public class PreferencesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,9 @@ public class PreferencesActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * creates an {@link AlertDialog} with the information about the application.
+     */
     private void showDialogInfo() {
         // setup the alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

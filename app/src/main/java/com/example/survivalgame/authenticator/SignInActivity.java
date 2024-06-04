@@ -34,7 +34,6 @@ public class SignInActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView goToLogin;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
 
     @Override
     public void onStart() {
@@ -70,6 +69,11 @@ public class SignInActivity extends AppCompatActivity {
         finish();
     }
 
+    private void startMainActivity() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
     private void bOnClickRegisterUser() {
         progressBar.setVisibility(View.VISIBLE);
         String email, password, passwordConfirm;
@@ -154,7 +158,7 @@ public class SignInActivity extends AppCompatActivity {
         }
 
         createUserWithMAuth(email, password);
-        addDatatoFirebase("<null>", email, 0);
+        addDataToDatabase("<null>", email, 0);
     }
 
 
@@ -162,46 +166,43 @@ public class SignInActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             progressBar.setVisibility(View.GONE);
             if (task.isSuccessful()) {
-
-                Toast.makeText(SignInActivity.this, "Acount Created.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
+                Toast.makeText(SignInActivity.this, getString(R.string.toast_signin_successful), Toast.LENGTH_SHORT).show();
+                startMainActivity();
 
             } else {
                 // If registering fails, display a message to the user.
-                Toast.makeText(SignInActivity.this, "Failed to register.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignInActivity.this, getString(R.string.toast_signin_unsuccessful, "Google API error"), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void addDatatoFirebase(String name, String address, int puntuacion) {
-        // Crear una instancia de la clase User y establecer sus atributos
+    private void addDataToDatabase(String name, String address, int score) {
+        // Create a new user and set parameters
         User user = new User();
         user.setUsername(name);
         user.setEmail(address.replace(".", "_"));
-        user.setPuntuacion(puntuacion);
+        user.setScore(score);
 
-        // Formatear la dirección de email reemplazando los puntos con guiones bajos
+        // Format email to avoid '.'
         String formattedAddress = address.replace(".", "_");
 
-        // Obtener la referencia al nodo específico del usuario en la base de datos
+        // Get reference to the user node on the database
         DatabaseReference userReference = firebaseDatabase.getReference("Users").child(formattedAddress);
 
-        // Establecer los valores en la referencia del usuario en la base de datos
+        // Save user data into the database
         userReference.setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        // Mostrar un mensaje de éxito cuando los datos se agreguen correctamente
-                        Toast.makeText(SignInActivity.this, "Usuario creado correctamente", Toast.LENGTH_SHORT).show();
+                        // MShow message when the account is created successfully
+                        Toast.makeText(SignInActivity.this, getString(R.string.toast_signin_successful), Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // Mostrar un mensaje de error si la operación falla
-                        Toast.makeText(SignInActivity.this, "Error al crear el usuario: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        // Show error message if the query fails
+                        Toast.makeText(SignInActivity.this, getString(R.string.toast_signin_unsuccessful, e), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -221,6 +222,5 @@ public class SignInActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progresBar);
         goToLogin = findViewById(R.id.tvAlreadyRegistered);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("Users");
     }
 }
