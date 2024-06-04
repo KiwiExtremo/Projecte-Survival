@@ -12,21 +12,29 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.survivalgame.R;
+import com.example.survivalgame.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignInActivity extends AppCompatActivity {
 
-    private EditText etUsername, etPassword, etPasswordConfirm;
+    private EditText etEmail, etPassword, etPasswordConfirm;
     private TextInputLayout etPasswordLayout, etPasswordConfirmLayout;
     private Button bRegister;
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
     private TextView goToLogin;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
     @Override
     public void onStart() {
@@ -66,18 +74,18 @@ public class SignInActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         String email, password, passwordConfirm;
 
-        email = etUsername.getText().toString();
+        email = etEmail.getText().toString();
         password = etPassword.getText().toString();
         passwordConfirm = etPasswordConfirm.getText().toString();
 
         if ("".equals(email)) {
-            etUsername.setError(getString(R.string.edit_text_error_user_email));
+            etEmail.setError(getString(R.string.edit_text_error_user_email));
             progressBar.setVisibility(View.GONE);
             return;
         }
 
         if (!isValidEmail(email)) {
-            etUsername.setError(getString(R.string.edit_text_error_invalid_email));
+            etEmail.setError(getString(R.string.edit_text_error_invalid_email));
             progressBar.setVisibility(View.GONE);
             return;
         }
@@ -146,6 +154,7 @@ public class SignInActivity extends AppCompatActivity {
         }
 
         createUserWithMAuth(email, password);
+        addDatatoFirebase("<null>", email, 0);
     }
 
 
@@ -166,13 +175,44 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
+    private void addDatatoFirebase(String name, String address, int puntuacion) {
+        // Crear una instancia de la clase User y establecer sus atributos
+        User user = new User();
+        user.setUsername(name);
+        user.setEmail(address.replace(".", "_"));
+        user.setPuntuacion(puntuacion);
+
+        // Formatear la dirección de email reemplazando los puntos con guiones bajos
+        String formattedAddress = address.replace(".", "_");
+
+        // Obtener la referencia al nodo específico del usuario en la base de datos
+        DatabaseReference userReference = firebaseDatabase.getReference("Users").child(formattedAddress);
+
+        // Establecer los valores en la referencia del usuario en la base de datos
+        userReference.setValue(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Mostrar un mensaje de éxito cuando los datos se agreguen correctamente
+                        Toast.makeText(SignInActivity.this, "Usuario creado correctamente", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Mostrar un mensaje de error si la operación falla
+                        Toast.makeText(SignInActivity.this, "Error al crear el usuario: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     private boolean isValidEmail(CharSequence email) {
         return email != null && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private void fetchFromLayout() {
         mAuth = FirebaseAuth.getInstance();
-        etUsername = findViewById(R.id.etUsername);
+        etEmail = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         etPasswordLayout = findViewById(R.id.etPasswordLayout);
         etPasswordConfirm = findViewById(R.id.etPasswordConfirm);
@@ -180,5 +220,7 @@ public class SignInActivity extends AppCompatActivity {
         bRegister = findViewById(R.id.bSinglePlayer);
         progressBar = findViewById(R.id.progresBar);
         goToLogin = findViewById(R.id.tvAlreadyRegistered);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Users");
     }
 }

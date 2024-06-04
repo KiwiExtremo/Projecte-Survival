@@ -7,7 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -16,7 +18,11 @@ import androidx.constraintlayout.widget.Guideline;
 import com.example.survivalgame.authenticator.MainActivity;
 import com.example.survivalgame.gameengine.GameView;
 import com.example.survivalgame.gamepanel.TutorialView;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class GameActivity extends AppCompatActivity {
     private boolean isSinglePlayer = true;
@@ -29,6 +35,8 @@ public class GameActivity extends AppCompatActivity {
     private TutorialView tutorialView;
     private MediaPlayer mp;
     private int currentTutorial = 1;
+    private FirebaseDatabase firebaseDatabase;
+    private String userEmail;
     private boolean isMusic;
     private SharedPreferences pref;
 
@@ -36,11 +44,14 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Grab intent extras from previous activity
         Bundle bundle = getIntent().getExtras();
 
         if (bundle.getInt("Mode") == 1) {
             isSinglePlayer = false;
         }
+        userEmail = bundle.getString("userEmail");
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         setContentView(R.layout.activity_game);
         gameView = findViewById(R.id.gameView);
@@ -94,7 +105,6 @@ public class GameActivity extends AppCompatActivity {
         if (mp != null && mp.isPlaying()) {
             mp.pause();
         }
-
     }
 
     public void showDialogGameOver(int score) {
@@ -103,6 +113,9 @@ public class GameActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.dialog_game_over_title));
             builder.setMessage(getString(R.string.dialog_game_over_body, score));
+
+            // Save score into database
+            saveScoreIntoDatabase(score);
 
             // add the buttons
             builder.setPositiveButton(getString(R.string.dialog_game_over_positive), (dialog, which) -> {
@@ -114,6 +127,29 @@ public class GameActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.setCancelable(false);
             dialog.show();
+        });
+    }
+
+    private void saveScoreIntoDatabase(int score) {
+        DatabaseReference userReference = firebaseDatabase.getReference("Users").child(userEmail.replace(".", "_"));
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    if (snapshot.hasChild("puntuacion")) {
+                        int puntuacionFirebase = snapshot.child("puntuacion").getValue(Integer.class);
+                        if (score > puntuacionFirebase) {
+                            userReference.child("puntuacion").setValue(score);
+                        }
+                    }
+                } else {
+                    Toast.makeText(GameActivity.this, "Usuario no encontrado", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(GameActivity.this, "Error de base de datos: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

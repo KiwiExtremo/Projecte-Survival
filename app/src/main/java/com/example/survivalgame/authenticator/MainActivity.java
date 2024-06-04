@@ -17,7 +17,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,16 +38,30 @@ import com.example.survivalgame.GameActivity;
 import com.example.survivalgame.PreferencesActivity;
 import com.example.survivalgame.R;
 import com.example.survivalgame.multiplayer.WiFiDirectBroadcastReceiver;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.example.survivalgame.multiplayer.WiFiDirectCommunication;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import java.util.ArrayList;
 import java.util.List;
 import android.os.Handler;
 
 
-@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_CODE = 1;
     private static final String[] REQUIRED_PERMISSIONS = {
@@ -58,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int BROADCAST_INTERVAL = 1000; // 1s
     private static final int BROADCAST_DURATION = 5000; // 5s
     private boolean isSearchingForRoom = false;
+    private static final int NO_ERROR = 0;
+    private static final int USERNAME_ALREADY_EXISTS = 1;
     private FirebaseAuth firebaseAuth;
     private Button bLogOut, bStartSinglePlayer, bStartMultiplayer, bLeaderboards;
     private TextView tvUsername, tvTeammate;
@@ -66,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
     private WifiP2pManager.Channel mChannel;
     private BroadcastReceiver mReceiver;
     private IntentFilter mIntentFilter;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+    private boolean isUsernameNull = false;
+    private boolean isUsernameChecked = false;
+    private int usernameError;
     private boolean isMusic;
     private MediaPlayer mp;
     public static SharedPreferences pref;
@@ -307,7 +334,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(int reasonCode) {
                 // Peer discovery failed
-                // Peer discovery failed
                 String reasonMsg;
                 switch (reasonCode) {
                     case WifiP2pManager.P2P_UNSUPPORTED:
@@ -345,21 +371,106 @@ public class MainActivity extends AppCompatActivity {
     private void bOnClickStartSinglePlayer() {
         Intent intent = new Intent(getApplicationContext(), GameActivity.class);
         intent.putExtra("Mode", MODE_SINGLEPLAYER);
+        intent.putExtra("userEmail", user.getEmail());
         startActivity(intent);
     }
 
     private void bOnClickStartMultiPlayer() {
         Intent intent = new Intent(getApplicationContext(), GameActivity.class);
         intent.putExtra("Mode", MODE_MULTIPLAYER);
+        intent.putExtra("userEmail", user.getEmail());
         // TODO put extra boolean isHost
         startActivity(intent);
     }
 
     private void bOnClickShowLeaderboards() {
-        // TODO fetch data from database and show it
-        showDialogLeaderboards();
+        getScoresFromFirebase();
     }
 
+    private void getScoresFromFirebase() {
+        databaseReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DataSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
+                        Map<String, Integer> scoreMap = new HashMap<>();
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            String username = userSnapshot.child("username").getValue(String.class);
+                            Integer score = userSnapshot.child("puntuacion").getValue(Integer.class);
+                            if (username != null && score != null) {
+                                scoreMap.put(username, score);
+                            }
+                        }
+                        showDialogLeaderboards(scoreMap);
+                    } else {
+                        Toast.makeText(MainActivity.this, "No hay datos disponibles.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "Error al obtener los datos.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private Map<String, Integer> sortMapByValue(Map<String, Integer> unsortedMap) {
+        List<Map.Entry<String, Integer>> list = new LinkedList<>(unsortedMap.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return (o2.getValue()).compareTo(o1.getValue());
+            }
+        });
+
+        Map<String, Integer> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
+    }
+
+    private void showDialogLeaderboards(Map<String, Integer> scoreMap) {
+        Map<String, Integer> sortedMap = sortMapByValue(scoreMap);
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("Leaderboard");
+
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        int rank = 1;
+        for (Map.Entry<String, Integer> entry : sortedMap.entrySet()) {
+            TextView playerTextView = new TextView(this);
+            playerTextView.setText(rank + ". " + entry.getKey() + ": " + entry.getValue());
+
+            layout.addView(playerTextView);
+            rank++;
+        }
+
+        scrollView.addView(layout);
+
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.addView(scrollView);
+
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                int numberOfPlayersToShow = 3;
+                int heightPerPlayer = 100;
+                int maxHeight = numberOfPlayersToShow * heightPerPlayer;
+                scrollView.getLayoutParams().height = maxHeight;
+                scrollView.requestLayout();
+            }
+        });
+
+        builder.setView(container);
+        builder.setPositiveButton("OK", null);
+        builder.show();
+    }
+
+    private void showDialogNewUser(String email) {
     private void showDialogInfo() {
         // setup the alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -382,21 +493,51 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle(getString(R.string.dialog_pause_title));
         builder.setMessage(getString(R.string.dialog_pause_body));
 
-        // add the buttons
-        builder.setPositiveButton(getString(R.string.dialog_pause_positive), (dialog, which) -> {
-            // TODO Check input username
+        EditText etUsername = new EditText(this);
+        etUsername.setSingleLine();
+        etUsername.setHint("Nombre de usuario");
 
-            // TODO Save username to the database
+        LinearLayout llUsername = createWrappedLayout(etUsername);
+        builder.setView(llUsername);
+
+        builder.setPositiveButton(getString(R.string.dialog_pause_positive), (dialog, which) -> {
+
         });
 
-        // create and show the alert dialog
+
+        builder.setPositiveButton("Aceptar", (dialog, which) -> {
+            String username = etUsername.getText().toString();
+            if ("".equals(username)) {
+                etUsername.setError("El nombre de usuario no puede estar vacío");
+            } else {
+                checkAndSetUsername(email, username);
+
+                if (usernameError == NO_ERROR) {
+                    dialog.dismiss();
+
+                } else if (usernameError == USERNAME_ALREADY_EXISTS) {//TODO mirar porque no salta el setError
+                    etUsername.setError("El nombre de usuario ya existe");
+                }
+            }
+        });
+
         AlertDialog dialog = builder.create();
         dialog.show();
         dialog.setCancelable(false);
     }
 
-    private void showDialogLeaderboards() {
-        // TODO show leaderboards
+    private LinearLayout createWrappedLayout(EditText editText) {
+        LinearLayout linearLayout = new LinearLayout(this);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.gravity = Gravity.CENTER;
+
+        editText.setLayoutParams(layoutParams);
+
+        linearLayout.addView(editText);
+        linearLayout.setPadding(60, 0, 60, 0);
+
+        return linearLayout;
     }
 
     private void updateBackgroundMusic() {
@@ -430,6 +571,97 @@ public class MainActivity extends AppCompatActivity {
         tvUsername = findViewById(R.id.tvUsername);
         tvTeammate = findViewById(R.id.tvTeammate);
         user = firebaseAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Users");
+
+        if (user == null) {
+            Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            String email = user.getEmail();
+            checkUsername(email, new Runnable() {
+                @Override
+                public void run() {
+                    if (isUsernameNull) {
+                        showDialogNewUser(user.getEmail());
+                    } else {
+                        databaseReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    DataSnapshot usernameSnapshot = snapshot.child(email.replace(".", "_")).child("username");
+                                    if (usernameSnapshot.exists() && usernameSnapshot.getValue() != null) {
+                                        String data = usernameSnapshot.getValue().toString();
+                                        tvUsername.setText(data);
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "No se ha encontrado un usuario con este nombre", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    private void checkAndSetUsername(String email, String newUsername) {
+        DatabaseReference usersReference = firebaseDatabase.getReference("Users");
+
+        usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean usernameExists = false;
+
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    String existingUsername = userSnapshot.child(email.replace(".", "_")).child("username").getValue(String.class);
+                    if (newUsername.equals(existingUsername)) {
+                        usernameExists = true;
+                        break;
+                    }
+                }
+                if (usernameExists) {
+                    usernameError = USERNAME_ALREADY_EXISTS;
+
+                } else {
+                    tvUsername.setText(newUsername);
+                    DatabaseReference nameReference = usersReference.child(email.replace(".", "_")).child("username");
+                    nameReference.setValue(newUsername);
+                    Toast.makeText(MainActivity.this, "Nombre de usuario actualizado", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void checkUsername(String email, Runnable callback) {
+        DatabaseReference nameReference = firebaseDatabase.getReference("Users").child(email.replace(".", "_")).child("username");
+
+        nameReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot dataSnapshot = task.getResult();
+                if (dataSnapshot.exists()) {
+                    String currentUsername = dataSnapshot.getValue(String.class);
+                    if ("<null>".equals(currentUsername)) {
+                        isUsernameNull = true;
+                    } else {
+                        tvUsername.setText(currentUsername);
+                    }
+                }
+            } else {
+                Toast.makeText(MainActivity.this, "Error al comprobar el nombre de usuario", Toast.LENGTH_SHORT).show();
+            }
+            callback.run();
+        });
     }
 
     private void initializeWiFiP2P() {
